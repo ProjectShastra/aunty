@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Users, ArrowRight, Flame, Sparkles, BadgePercent, Gift } from "lucide-react";
+import { Heart, Users, ArrowRight, Gift } from "lucide-react";
 import ProfileCard from "@/components/ProfileCard";
 import AuntyMascot from "@/components/AuntyMascot";
 
@@ -12,7 +12,6 @@ const Index = () => {
   const [signups, setSignups] = useState(3182);
   const maxFreeUsers = 5000; // Total free slots available
   const remainingFreeSlots = Math.max(0, maxFreeUsers - signups);
-  const freePercentage = Math.round((remainingFreeSlots / maxFreeUsers) * 100);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -54,13 +53,6 @@ const Index = () => {
               <AuntyMascot />
             </div>
 
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg animate-pulse">
-              <p className="text-xl font-semibold text-[#faf3eb]">
-                <Flame className="inline-block mr-2 h-5 w-5 text-[#faf3eb]" />
-                <span className="font-bold">{signups.toLocaleString()}</span> matches found!
-              </p>
-            </div>
-
             <div className="bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 mb-8 shadow-lg border-2 border-[#F97316] border-dashed">
               <div className="flex items-center justify-center gap-2 text-[#6d4773] mb-2">
                 <Gift className="h-5 w-5" />
@@ -74,13 +66,6 @@ const Index = () => {
               <p className="text-xs text-[#6d4773] mt-1">
                 (But you'll find your match so fast, you won't need it anyway 😉)
               </p>
-              <div className="w-full bg-white bg-opacity-50 rounded-full h-2.5 mt-3">
-                <div 
-                  className="bg-[#F97316] h-2.5 rounded-full transition-all duration-500 ease-in-out" 
-                  style={{ width: `${freePercentage}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-[#6d4773] mt-1 font-medium">{freePercentage}% remaining</p>
             </div>
 
             <div className="mt-6">
@@ -151,10 +136,6 @@ const Index = () => {
               </div>
               
               <div className="mt-8 bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 shadow-lg border-2 border-[#F97316] border-dashed text-[#6d4773]">
-                <div className="flex items-center gap-2 mb-1">
-                  <BadgePercent className="h-6 w-6 text-[#F97316]" />
-                  <h3 className="font-bold text-lg">Limited Offer</h3>
-                </div>
                 <p className="font-semibold">First {maxFreeUsers.toLocaleString()} users: <span className="underline">Free for Life</span></p>
                 <p className="text-sm mt-1"><span className="font-bold text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> spots left!</p>
               </div>
@@ -200,12 +181,6 @@ const Index = () => {
           
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-2xl font-bold mb-4 text-[#faf3eb]">Ready to meet your match?</h2>
-            
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg animate-pulse">
-              <p className="text-lg font-semibold text-[#faf3eb]">
-                <span className="font-bold">{signups.toLocaleString()}</span> people waiting!
-              </p>
-            </div>
             
             <div className="bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg border-2 border-[#F97316] border-dashed">
               <p className="font-bold text-[#6d4773]">
