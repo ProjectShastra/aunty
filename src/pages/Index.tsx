@@ -3,13 +3,16 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Users, ArrowRight, Flame, Sparkles } from "lucide-react";
+import { Heart, Users, ArrowRight, Flame, Sparkles, BadgePercent, Gift } from "lucide-react";
 import ProfileCard from "@/components/ProfileCard";
 import AuntyMascot from "@/components/AuntyMascot";
 
 const Index = () => {
   const [showIntro, setShowIntro] = useState(true);
   const [signups, setSignups] = useState(3182);
+  const maxFreeUsers = 5000; // Total free slots available
+  const remainingFreeSlots = Math.max(0, maxFreeUsers - signups);
+  const freePercentage = Math.round((remainingFreeSlots / maxFreeUsers) * 100);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -51,12 +54,36 @@ const Index = () => {
               <AuntyMascot />
             </div>
 
-            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 mb-8 shadow-lg animate-pulse">
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg animate-pulse">
               <p className="text-xl font-semibold text-[#faf3eb]">
                 <Flame className="inline-block mr-2 h-5 w-5 text-[#faf3eb]" />
                 <span className="font-bold">{signups.toLocaleString()}</span> people have already found their cosmic match!
               </p>
               <p className="text-[#faf3eb] text-sm mt-1">Limited spots available. Don't miss your perfect match!</p>
+            </div>
+
+            <div className="bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 mb-8 shadow-lg border-2 border-[#F97316] border-dashed">
+              <div className="flex items-center justify-center gap-2 text-[#6d4773] mb-2">
+                <Gift className="h-5 w-5" />
+                <p className="text-lg font-bold">
+                  Special Launch Offer
+                </p>
+                <Gift className="h-5 w-5" />
+              </div>
+              <p className="text-[#6d4773] font-semibold">
+                Only <span className="text-[#F97316] font-bold text-xl">{remainingFreeSlots.toLocaleString()}</span> lifetime free memberships remaining!
+              </p>
+              <p className="text-sm text-[#6d4773] mt-1">
+                Find your soulmate before you need a subscription 
+                <span className="italic">(but you won't need it anyway, right?)</span> 😉
+              </p>
+              <div className="w-full bg-white bg-opacity-50 rounded-full h-2.5 mt-3">
+                <div 
+                  className="bg-[#F97316] h-2.5 rounded-full transition-all duration-500 ease-in-out" 
+                  style={{ width: `${freePercentage}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-[#6d4773] mt-1 font-medium">{freePercentage}% of free slots remaining</p>
             </div>
 
             <div className="mt-6">
@@ -126,9 +153,19 @@ const Index = () => {
                 </div>
               </div>
               
+              <div className="mt-8 bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 shadow-lg border-2 border-[#F97316] border-dashed text-[#6d4773]">
+                <div className="flex items-center gap-2 mb-2">
+                  <BadgePercent className="h-6 w-6 text-[#F97316]" />
+                  <h3 className="font-bold text-lg">Early Bird Special</h3>
+                </div>
+                <p className="font-semibold">First {maxFreeUsers.toLocaleString()} users get <span className="underline">lifetime free access</span></p>
+                <p className="text-sm mt-1">Only <span className="font-bold text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> spots left!</p>
+                <p className="text-xs italic mt-2">But you'll find your soulmate so fast, you won't need it for long anyway! 😉</p>
+              </div>
+              
               <Button 
                 asChild 
-                className="mt-8 bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773]"
+                className="mt-4 bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773]"
               >
                 <Link to="/signup">
                   Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
@@ -179,12 +216,21 @@ const Index = () => {
               <p className="text-sm text-[#faf3eb] opacity-90">Early access is limited — Claim your spot before they're gone!</p>
             </div>
             
+            <div className="bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg border-2 border-[#F97316] border-dashed">
+              <p className="font-bold text-[#6d4773]">
+                Only <span className="text-2xl text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> lifetime free memberships remaining!
+              </p>
+              <p className="text-sm text-[#6d4773] italic mt-1">
+                Find your perfect match and you won't need a subscription anyway! 💞
+              </p>
+            </div>
+            
             <Button 
               asChild 
               size="lg" 
               className="bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773] px-6 py-5 rounded-md"
             >
-              <Link to="/signup">Create Your Profile Now</Link>
+              <Link to="/signup">Create Your Free Profile Now</Link>
             </Button>
           </div>
         </div>
