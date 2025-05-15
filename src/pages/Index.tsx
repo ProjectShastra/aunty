@@ -57,25 +57,22 @@ const Index = () => {
             <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg animate-pulse">
               <p className="text-xl font-semibold text-[#faf3eb]">
                 <Flame className="inline-block mr-2 h-5 w-5 text-[#faf3eb]" />
-                <span className="font-bold">{signups.toLocaleString()}</span> people have already found their cosmic match!
+                <span className="font-bold">{signups.toLocaleString()}</span> matches found!
               </p>
-              <p className="text-[#faf3eb] text-sm mt-1">Limited spots available. Don't miss your perfect match!</p>
             </div>
 
             <div className="bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 mb-8 shadow-lg border-2 border-[#F97316] border-dashed">
               <div className="flex items-center justify-center gap-2 text-[#6d4773] mb-2">
                 <Gift className="h-5 w-5" />
                 <p className="text-lg font-bold">
-                  Special Launch Offer
+                  Free For Life
                 </p>
-                <Gift className="h-5 w-5" />
               </div>
               <p className="text-[#6d4773] font-semibold">
-                Only <span className="text-[#F97316] font-bold text-xl">{remainingFreeSlots.toLocaleString()}</span> lifetime free memberships remaining!
+                Only <span className="text-[#F97316] font-bold text-xl">{remainingFreeSlots.toLocaleString()}</span> spots left!
               </p>
-              <p className="text-sm text-[#6d4773] mt-1">
-                Find your soulmate before you need a subscription 
-                <span className="italic">(but you won't need it anyway, right?)</span> 😉
+              <p className="text-xs text-[#6d4773] mt-1">
+                (But you'll find your match so fast, you won't need it anyway 😉)
               </p>
               <div className="w-full bg-white bg-opacity-50 rounded-full h-2.5 mt-3">
                 <div 
@@ -83,7 +80,7 @@ const Index = () => {
                   style={{ width: `${freePercentage}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-[#6d4773] mt-1 font-medium">{freePercentage}% of free slots remaining</p>
+              <p className="text-xs text-[#6d4773] mt-1 font-medium">{freePercentage}% remaining</p>
             </div>
 
             <div className="mt-6">
@@ -93,7 +90,7 @@ const Index = () => {
                   size="lg" 
                   className="bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773] px-6 py-5 rounded-md font-semibold"
                 >
-                  See How It Works
+                  How It Works
                 </Button>
                 <Button 
                   asChild
@@ -127,8 +124,8 @@ const Index = () => {
                     <span className="font-bold text-[#e45964]">1</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-[#faf3eb]">Create Your Profile</h3>
-                    <p className="text-[#faf3eb] opacity-90">Share your birth details, preferences, and what you're looking for in a partner.</p>
+                    <h3 className="font-semibold text-xl mb-1 text-[#faf3eb]">Create Profile</h3>
+                    <p className="text-[#faf3eb] opacity-90">Share your birth details & preferences.</p>
                   </div>
                 </div>
                 
@@ -137,8 +134,8 @@ const Index = () => {
                     <span className="font-bold text-[#e45964]">2</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-[#faf3eb]">Vedic Astrology Match</h3>
-                    <p className="text-[#faf3eb] opacity-90">Our prediction engine analyzes your cosmic compatibility with potential matches.</p>
+                    <h3 className="font-semibold text-xl mb-1 text-[#faf3eb]">Vedic Match</h3>
+                    <p className="text-[#faf3eb] opacity-90">Cosmic compatibility analysis.</p>
                   </div>
                 </div>
                 
@@ -147,20 +144,19 @@ const Index = () => {
                     <span className="font-bold text-[#e45964]">3</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-[#faf3eb]">Meet Your Matches</h3>
-                    <p className="text-[#faf3eb] opacity-90">Connect with your most compatible matches and start your journey together.</p>
+                    <h3 className="font-semibold text-xl mb-1 text-[#faf3eb]">Connect</h3>
+                    <p className="text-[#faf3eb] opacity-90">Meet your cosmic matches.</p>
                   </div>
                 </div>
               </div>
               
               <div className="mt-8 bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 shadow-lg border-2 border-[#F97316] border-dashed text-[#6d4773]">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mb-1">
                   <BadgePercent className="h-6 w-6 text-[#F97316]" />
-                  <h3 className="font-bold text-lg">Early Bird Special</h3>
+                  <h3 className="font-bold text-lg">Limited Offer</h3>
                 </div>
-                <p className="font-semibold">First {maxFreeUsers.toLocaleString()} users get <span className="underline">lifetime free access</span></p>
-                <p className="text-sm mt-1">Only <span className="font-bold text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> spots left!</p>
-                <p className="text-xs italic mt-2">But you'll find your soulmate so fast, you won't need it for long anyway! 😉</p>
+                <p className="font-semibold">First {maxFreeUsers.toLocaleString()} users: <span className="underline">Free for Life</span></p>
+                <p className="text-sm mt-1"><span className="font-bold text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> spots left!</p>
               </div>
               
               <Button 
@@ -168,7 +164,7 @@ const Index = () => {
                 className="mt-4 bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773]"
               >
                 <Link to="/signup">
-                  Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
+                  Start Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
@@ -178,11 +174,11 @@ const Index = () => {
                 <CardTitle>
                   <div className="flex items-center gap-2">
                     <Heart className="text-[#faf3eb]" />
-                    <span>Auntie's Top Picks</span>
+                    <span>Top Matches</span>
                   </div>
                 </CardTitle>
                 <CardDescription className="text-[#faf3eb] opacity-90">
-                  See how our Vedic Astrology matching works
+                  See how our matching works
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 p-6">
@@ -196,32 +192,24 @@ const Index = () => {
                   className="w-full border-[#6d4773] text-[#6d4773] hover:bg-[#f5e9d7]"
                 >
                   <Users className="mr-2 h-4 w-4" />
-                  View More Matches
+                  See More Matches
                 </Button>
               </CardFooter>
             </Card>
           </div>
           
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl font-bold mb-4 text-[#faf3eb]">Ready to find your cosmic match?</h2>
+            <h2 className="text-2xl font-bold mb-4 text-[#faf3eb]">Ready to meet your match?</h2>
             
             <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg animate-pulse">
-              <div className="flex items-center justify-center gap-2">
-                <Sparkles className="h-5 w-5 text-[#faf3eb]" />
-                <p className="text-lg font-semibold text-[#faf3eb]">
-                  <span className="font-bold">{signups.toLocaleString()}</span> people already waiting for their match!
-                </p>
-                <Sparkles className="h-5 w-5 text-[#faf3eb]" />
-              </div>
-              <p className="text-sm text-[#faf3eb] opacity-90">Early access is limited — Claim your spot before they're gone!</p>
+              <p className="text-lg font-semibold text-[#faf3eb]">
+                <span className="font-bold">{signups.toLocaleString()}</span> people waiting!
+              </p>
             </div>
             
             <div className="bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg border-2 border-[#F97316] border-dashed">
               <p className="font-bold text-[#6d4773]">
-                Only <span className="text-2xl text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> lifetime free memberships remaining!
-              </p>
-              <p className="text-sm text-[#6d4773] italic mt-1">
-                Find your perfect match and you won't need a subscription anyway! 💞
+                <span className="text-xl text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> free spots left
               </p>
             </div>
             
@@ -230,7 +218,7 @@ const Index = () => {
               size="lg" 
               className="bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773] px-6 py-5 rounded-md"
             >
-              <Link to="/signup">Create Your Free Profile Now</Link>
+              <Link to="/signup">Create Free Profile</Link>
             </Button>
           </div>
         </div>
