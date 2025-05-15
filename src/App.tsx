@@ -21,9 +21,17 @@ const queryClient = new QueryClient();
 const App = () => {
   // Prevent your app from being displayed in frames (basic anti-iframe protection)
   useEffect(() => {
-    if (window.top !== window.self) {
-      // If site is being embedded in an iframe
-      window.top.location.href = window.location.href;
+    try {
+      // Check if site is being embedded in an iframe
+      if (window.top !== window.self) {
+        console.log("App detected it's running in an iframe");
+        // In production, you might want to redirect
+        // We're commenting out the redirect to avoid security errors in development
+        // window.top.location.href = window.location.href;
+      }
+    } catch (e) {
+      // This will catch security errors when trying to access window.top
+      console.error("Security restriction prevented checking frame status:", e);
     }
     
     // Add simple copy protection
