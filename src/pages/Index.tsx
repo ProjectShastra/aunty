@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -53,9 +52,8 @@ const Index = () => {
                 </Button>
                 <Button 
                   asChild
-                  variant="outline" 
                   size="lg" 
-                  className="border-[#faf3eb] text-[#faf3eb] hover:bg-[#eb6a74] py-5 rounded-md font-semibold"
+                  className="bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773] px-6 py-5 rounded-md font-semibold"
                 >
                   <Link to="/signup">
                     Get Started <ArrowRight className="ml-2 h-5 w-5" />
