@@ -1,13 +1,22 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, Users, ArrowRight } from "lucide-react";
+import { Heart, Users, ArrowRight, Flame, Sparkles } from "lucide-react";
 import ProfileCard from "@/components/ProfileCard";
 import AuntyMascot from "@/components/AuntyMascot";
 
 const Index = () => {
   const [showIntro, setShowIntro] = useState(true);
+  const [signups, setSignups] = useState(3182);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSignups((prev) => prev + Math.floor(Math.random() * 3));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
   
   const sampleProfiles = [
     {
@@ -41,6 +50,15 @@ const Index = () => {
             <div className="mb-8">
               <AuntyMascot />
             </div>
+
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 mb-8 shadow-lg animate-pulse">
+              <p className="text-xl font-semibold text-[#faf3eb]">
+                <Flame className="inline-block mr-2 h-5 w-5 text-[#faf3eb]" />
+                <span className="font-bold">{signups.toLocaleString()}</span> people have already found their cosmic match!
+              </p>
+              <p className="text-[#faf3eb] text-sm mt-1">Limited spots available. Don't miss your perfect match!</p>
+            </div>
+
             <div className="mt-6">
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
@@ -149,15 +167,24 @@ const Index = () => {
           
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-2xl font-bold mb-4 text-[#faf3eb]">Ready to find your cosmic match?</h2>
-            <p className="text-[#faf3eb] opacity-90 mb-6">
-              Join thousands of South Asians who found their perfect match with Auntie's wisdom.
-            </p>
+            
+            <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg animate-pulse">
+              <div className="flex items-center justify-center gap-2">
+                <Sparkles className="h-5 w-5 text-[#faf3eb]" />
+                <p className="text-lg font-semibold text-[#faf3eb]">
+                  <span className="font-bold">{signups.toLocaleString()}</span> people already waiting for their match!
+                </p>
+                <Sparkles className="h-5 w-5 text-[#faf3eb]" />
+              </div>
+              <p className="text-sm text-[#faf3eb] opacity-90">Early access is limited — Claim your spot before they're gone!</p>
+            </div>
+            
             <Button 
               asChild 
               size="lg" 
               className="bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773] px-6 py-5 rounded-md"
             >
-              <Link to="/signup">Create Your Profile</Link>
+              <Link to="/signup">Create Your Profile Now</Link>
             </Button>
           </div>
         </div>
