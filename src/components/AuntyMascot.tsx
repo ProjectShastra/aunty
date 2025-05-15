@@ -10,7 +10,7 @@ const AuntyMascot = () => {
   return (
     <div className="relative inline-block">
       <div className="flex flex-col items-center">
-        {/* Aunty Character - Illustrated Style */}
+        {/* Aunty Character - Improved Illustrated Style */}
         <div className="w-36 h-36 md:w-48 md:h-48 bg-pink-500 rounded-full flex items-center justify-center overflow-hidden relative">
           <div className="absolute inset-0 flex items-center justify-center">
             {/* Sari/Outfit - Purple */}
@@ -19,30 +19,32 @@ const AuntyMascot = () => {
             {/* Face */}
             <div className="absolute w-20 h-20 md:w-24 md:h-24 bg-amber-700 rounded-full top-6 md:top-8">
               {/* Glasses */}
-              <div className="absolute w-16 md:w-20 h-4 border-2 border-gray-900 rounded-full top-8 md:top-10 left-1/2 transform -translate-x-1/2"></div>
-              <div className="absolute w-3 h-3 md:w-4 md:h-4 bg-gray-900 rounded-full top-8 md:top-10 left-1/2 transform -translate-x-5 md:-translate-x-7"></div>
-              <div className="absolute w-3 h-3 md:w-4 md:h-4 bg-gray-900 rounded-full top-8 md:top-10 left-1/2 transform translate-x-2 md:translate-x-3"></div>
+              <div className="absolute w-24 md:w-28 h-6 border-t-4 border-gray-900 rounded-t-full top-7 md:top-8 left-1/2 transform -translate-x-1/2"></div>
+              <div className="absolute w-5 h-5 md:w-6 md:h-6 bg-white rounded-full top-8 md:top-9 left-1/2 transform -translate-x-6 md:-translate-x-8 border-2 border-gray-900"></div>
+              <div className="absolute w-5 h-5 md:w-6 md:h-6 bg-white rounded-full top-8 md:top-9 left-1/2 transform translate-x-1 md:translate-x-2 border-2 border-gray-900"></div>
+              <div className="absolute w-2 h-2 md:w-3 md:h-3 bg-gray-900 rounded-full top-9 md:top-10 left-1/2 transform -translate-x-6 md:-translate-x-8"></div>
+              <div className="absolute w-2 h-2 md:w-3 md:h-3 bg-gray-900 rounded-full top-9 md:top-10 left-1/2 transform translate-x-3 md:translate-x-4"></div>
               
               {/* Smile */}
-              <div className="absolute w-10 h-5 border-b-2 border-gray-900 rounded-b-full bottom-4 left-1/2 transform -translate-x-1/2"></div>
+              <div className="absolute w-10 h-5 border-b-4 border-gray-900 rounded-b-full bottom-2 left-1/2 transform -translate-x-1/2"></div>
               
               {/* Bindi */}
-              <div className="absolute w-1.5 h-1.5 bg-red-700 rounded-full top-6 left-1/2 transform -translate-x-1/2"></div>
+              <div className="absolute w-2 h-2 md:w-3 md:h-3 bg-red-600 rounded-full top-4 left-1/2 transform -translate-x-1/2"></div>
             </div>
             
             {/* Hair */}
-            <div className="absolute w-24 h-16 md:w-28 md:h-20 bg-gray-300 rounded-t-full top-0 overflow-hidden">
-              <div className="absolute w-6 h-10 bg-gray-400 rounded-full -top-2 left-3"></div>
-              <div className="absolute w-6 h-10 bg-gray-400 rounded-full -top-1 right-3"></div>
-              <div className="absolute w-8 h-8 bg-gray-400 rounded-full top-2 left-1/2 transform -translate-x-1/2"></div>
+            <div className="absolute w-28 h-18 md:w-32 md:h-22 bg-gray-300 rounded-t-full top-0 overflow-hidden">
+              <div className="absolute w-10 h-14 bg-gray-400 rounded-full -top-4 left-2"></div>
+              <div className="absolute w-10 h-14 bg-gray-400 rounded-full -top-2 right-2"></div>
+              <div className="absolute w-10 h-10 bg-gray-400 rounded-full top-1 left-1/2 transform -translate-x-1/2"></div>
             </div>
             
             {/* Gold Jewelry - Earrings */}
-            <div className="absolute w-2 h-2 bg-yellow-500 rounded-full top-16 md:top-20 left-5 md:left-8 shadow-md"></div>
-            <div className="absolute w-2 h-2 bg-yellow-500 rounded-full top-16 md:top-20 right-5 md:right-8 shadow-md"></div>
+            <div className="absolute w-3 h-3 md:w-4 md:h-4 bg-yellow-500 rounded-full top-16 md:top-20 left-4 md:left-6 shadow-md"></div>
+            <div className="absolute w-3 h-3 md:w-4 md:h-4 bg-yellow-500 rounded-full top-16 md:top-20 right-4 md:right-6 shadow-md"></div>
             
             {/* Gold Necklace */}
-            <div className="absolute w-12 h-1 bg-yellow-500 rounded-full top-20 md:top-24 left-1/2 transform -translate-x-1/2"></div>
+            <div className="absolute w-16 md:w-20 h-2 bg-yellow-500 rounded-full top-24 md:top-28 left-1/2 transform -translate-x-1/2"></div>
           </div>
         </div>
         
