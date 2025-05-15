@@ -31,10 +31,10 @@ const ProfileCard = ({ profile }: ProfileCardProps) => {
             <p className="text-sm text-gray-500">{location}</p>
           </div>
           <div className="text-right">
-            <span className="text-sm font-bold text-[#9B6BFB]">{compatibility}%</span>
+            <span className="text-sm font-bold text-[#6d4773]">{compatibility}%</span>
             <div className="w-20">
               <Progress value={compatibility} className="h-1.5 bg-gray-100" 
-                indicatorClassName="bg-[#9B6BFB]" />
+                indicatorClassName="bg-[#e45964]" />
             </div>
           </div>
         </div>

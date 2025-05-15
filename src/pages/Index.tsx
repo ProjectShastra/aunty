@@ -35,97 +35,100 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#e45964]">
       {showIntro ? (
         <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-screen text-center">
           <div className="max-w-2xl">
-            <div className="mb-8 relative">
+            <div className="mb-8">
               <AuntyMascot />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#9B6BFB]">
-              Meet Your Matchmaker
-            </h1>
-            <p className="text-lg md:text-xl mb-8 text-gray-600">
-              Your personal matchmaker powered by Vedic Astrology. <br />
-              Find your perfect connection written in the stars.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                onClick={() => setShowIntro(false)}
-                size="lg" 
-                className="bg-[#9B6BFB] hover:bg-[#8A5CF5] text-white px-6 py-5 rounded-md"
-              >
-                See How It Works
-              </Button>
-              <Button asChild variant="outline" size="lg" className="border-[#9B6BFB] text-[#9B6BFB] hover:bg-[#F5F2FF] py-5 rounded-md">
-                <Link to="/signup">
-                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+            <div className="mt-6">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  onClick={() => setShowIntro(false)}
+                  size="lg" 
+                  className="bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773] px-6 py-5 rounded-md font-semibold"
+                >
+                  See How It Works
+                </Button>
+                <Button 
+                  asChild
+                  variant="outline" 
+                  size="lg" 
+                  className="border-[#faf3eb] text-[#faf3eb] hover:bg-[#eb6a74] py-5 rounded-md font-semibold"
+                >
+                  <Link to="/signup">
+                    Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="container mx-auto px-4 py-16">
+        <div className="container mx-auto px-4 py-16 text-[#faf3eb]">
           <Button
             onClick={() => setShowIntro(true)}
             variant="ghost"
-            className="mb-8 text-[#9B6BFB]"
+            className="mb-8 text-[#faf3eb] hover:bg-[#eb6a74]"
           >
             ← Back
           </Button>
           
           <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
             <div>
-              <h2 className="text-3xl font-bold mb-8 text-[#9B6BFB]">How Aunty Works</h2>
+              <h2 className="text-3xl font-bold mb-8 text-[#faf3eb]">How Auntie Works</h2>
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <div className="bg-[#F5F2FF] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
-                    <span className="font-bold text-[#9B6BFB]">1</span>
+                  <div className="bg-[#faf3eb] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
+                    <span className="font-bold text-[#e45964]">1</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-gray-800">Create Your Profile</h3>
-                    <p className="text-gray-600">Share your birth details, preferences, and what you're looking for in a partner.</p>
+                    <h3 className="font-semibold text-xl mb-2 text-[#faf3eb]">Create Your Profile</h3>
+                    <p className="text-[#faf3eb] opacity-90">Share your birth details, preferences, and what you're looking for in a partner.</p>
                   </div>
                 </div>
                 
                 <div className="flex gap-4">
-                  <div className="bg-[#F5F2FF] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
-                    <span className="font-bold text-[#9B6BFB]">2</span>
+                  <div className="bg-[#faf3eb] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
+                    <span className="font-bold text-[#e45964]">2</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-gray-800">Vedic Astrology Match</h3>
-                    <p className="text-gray-600">Our prediction engine analyzes your cosmic compatibility with potential matches.</p>
+                    <h3 className="font-semibold text-xl mb-2 text-[#faf3eb]">Vedic Astrology Match</h3>
+                    <p className="text-[#faf3eb] opacity-90">Our prediction engine analyzes your cosmic compatibility with potential matches.</p>
                   </div>
                 </div>
                 
                 <div className="flex gap-4">
-                  <div className="bg-[#F5F2FF] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
-                    <span className="font-bold text-[#9B6BFB]">3</span>
+                  <div className="bg-[#faf3eb] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
+                    <span className="font-bold text-[#e45964]">3</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-gray-800">Meet Your Matches</h3>
-                    <p className="text-gray-600">Connect with your most compatible matches and start your journey together.</p>
+                    <h3 className="font-semibold text-xl mb-2 text-[#faf3eb]">Meet Your Matches</h3>
+                    <p className="text-[#faf3eb] opacity-90">Connect with your most compatible matches and start your journey together.</p>
                   </div>
                 </div>
               </div>
               
-              <Button asChild className="mt-8 bg-[#9B6BFB] hover:bg-[#8A5CF5] text-white">
+              <Button 
+                asChild 
+                className="mt-8 bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773]"
+              >
                 <Link to="/signup">
                   Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
             
-            <Card className="border border-gray-200 shadow-sm overflow-hidden rounded-lg">
-              <CardHeader className="bg-[#9B6BFB] text-white">
+            <Card className="border-0 shadow-lg overflow-hidden rounded-lg bg-[#faf3eb]">
+              <CardHeader className="bg-[#6d4773] text-[#faf3eb]">
                 <CardTitle>
                   <div className="flex items-center gap-2">
-                    <Heart className="text-white" />
-                    <span>Aunty's Top Picks</span>
+                    <Heart className="text-[#faf3eb]" />
+                    <span>Auntie's Top Picks</span>
                   </div>
                 </CardTitle>
-                <CardDescription className="text-white/90">
+                <CardDescription className="text-[#faf3eb] opacity-90">
                   See how our Vedic Astrology matching works
                 </CardDescription>
               </CardHeader>
@@ -135,7 +138,10 @@ const Index = () => {
                 ))}
               </CardContent>
               <CardFooter className="justify-center border-t border-gray-100 pt-4 pb-6">
-                <Button variant="outline" className="w-full border-[#9B6BFB] text-[#9B6BFB] hover:bg-[#F5F2FF]">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-[#6d4773] text-[#6d4773] hover:bg-[#f5e9d7]"
+                >
                   <Users className="mr-2 h-4 w-4" />
                   View More Matches
                 </Button>
@@ -144,11 +150,15 @@ const Index = () => {
           </div>
           
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl font-bold mb-4 text-[#9B6BFB]">Ready to find your cosmic match?</h2>
-            <p className="text-gray-600 mb-6">
-              Join thousands of South Asians who found their perfect match with Aunty's wisdom.
+            <h2 className="text-2xl font-bold mb-4 text-[#faf3eb]">Ready to find your cosmic match?</h2>
+            <p className="text-[#faf3eb] opacity-90 mb-6">
+              Join thousands of South Asians who found their perfect match with Auntie's wisdom.
             </p>
-            <Button asChild size="lg" className="bg-[#9B6BFB] hover:bg-[#8A5CF5] text-white px-6 py-5 rounded-md">
+            <Button 
+              asChild 
+              size="lg" 
+              className="bg-[#faf3eb] hover:bg-[#f5e9d7] text-[#6d4773] px-6 py-5 rounded-md"
+            >
               <Link to="/signup">Create Your Profile</Link>
             </Button>
           </div>
