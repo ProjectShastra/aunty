@@ -48,7 +48,7 @@ const AuntyMascot = () => {
         
         {/* Text under mascot */}
         <div className="mt-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-pink-500 font-serif tracking-wider">AUNTIE</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-pink-500 font-serif tracking-wider">AUNTY</h2>
           <p className="text-sm md:text-base text-pink-600 font-medium mt-1 px-2 max-w-xs">
             Modern Love. Ancient Wisdom.
           </p>
