@@ -35,29 +35,29 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-purple-100 via-pink-50 to-white">
+    <div className="min-h-screen bg-white">
       {showIntro ? (
         <div className="container mx-auto px-4 py-16 flex flex-col items-center justify-center min-h-screen text-center">
-          <div className="max-w-3xl bg-white/60 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-pink-100">
+          <div className="max-w-2xl">
             <div className="mb-8 relative">
               <AuntyMascot />
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#9B6BFB]">
               Meet Your Matchmaker
             </h1>
-            <p className="text-lg md:text-xl mb-8 text-gray-700">
+            <p className="text-lg md:text-xl mb-8 text-gray-600">
               Your personal matchmaker powered by Vedic Astrology. <br />
               Find your perfect connection written in the stars.
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button 
                 onClick={() => setShowIntro(false)}
                 size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 text-white px-8 py-6 rounded-xl shadow-md"
+                className="bg-[#9B6BFB] hover:bg-[#8A5CF5] text-white px-6 py-5 rounded-md"
               >
                 See How It Works
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-pink-300 hover:bg-pink-50 py-6 rounded-xl">
+              <Button asChild variant="outline" size="lg" className="border-[#9B6BFB] text-[#9B6BFB] hover:bg-[#F5F2FF] py-5 rounded-md">
                 <Link to="/signup">
                   Get Started <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -70,55 +70,55 @@ const Index = () => {
           <Button
             onClick={() => setShowIntro(true)}
             variant="ghost"
-            className="mb-8"
+            className="mb-8 text-[#9B6BFB]"
           >
             ← Back
           </Button>
           
-          <div className="grid md:grid-cols-2 gap-16 items-center mb-20">
-            <div className="bg-white/70 backdrop-blur-sm p-8 rounded-2xl shadow-md border border-pink-100">
-              <h2 className="text-3xl font-bold mb-8 bg-gradient-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">How Aunty Works</h2>
-              <div className="space-y-8">
-                <div className="flex gap-6">
-                  <div className="bg-pink-100 rounded-full h-12 w-12 flex items-center justify-center flex-shrink-0 shadow-inner border border-pink-200">
-                    <span className="font-bold text-pink-500">1</span>
+          <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
+            <div>
+              <h2 className="text-3xl font-bold mb-8 text-[#9B6BFB]">How Aunty Works</h2>
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <div className="bg-[#F5F2FF] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
+                    <span className="font-bold text-[#9B6BFB]">1</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-purple-700">Create Your Profile</h3>
+                    <h3 className="font-semibold text-xl mb-2 text-gray-800">Create Your Profile</h3>
                     <p className="text-gray-600">Share your birth details, preferences, and what you're looking for in a partner.</p>
                   </div>
                 </div>
                 
-                <div className="flex gap-6">
-                  <div className="bg-pink-100 rounded-full h-12 w-12 flex items-center justify-center flex-shrink-0 shadow-inner border border-pink-200">
-                    <span className="font-bold text-pink-500">2</span>
+                <div className="flex gap-4">
+                  <div className="bg-[#F5F2FF] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
+                    <span className="font-bold text-[#9B6BFB]">2</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-purple-700">Vedic Astrology Match</h3>
+                    <h3 className="font-semibold text-xl mb-2 text-gray-800">Vedic Astrology Match</h3>
                     <p className="text-gray-600">Our prediction engine analyzes your cosmic compatibility with potential matches.</p>
                   </div>
                 </div>
                 
-                <div className="flex gap-6">
-                  <div className="bg-pink-100 rounded-full h-12 w-12 flex items-center justify-center flex-shrink-0 shadow-inner border border-pink-200">
-                    <span className="font-bold text-pink-500">3</span>
+                <div className="flex gap-4">
+                  <div className="bg-[#F5F2FF] rounded-md h-10 w-10 flex items-center justify-center flex-shrink-0">
+                    <span className="font-bold text-[#9B6BFB]">3</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-xl mb-2 text-purple-700">Meet Your Matches</h3>
+                    <h3 className="font-semibold text-xl mb-2 text-gray-800">Meet Your Matches</h3>
                     <p className="text-gray-600">Connect with your most compatible matches and start your journey together.</p>
                   </div>
                 </div>
               </div>
               
-              <Button asChild className="mt-10 bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90">
+              <Button asChild className="mt-8 bg-[#9B6BFB] hover:bg-[#8A5CF5] text-white">
                 <Link to="/signup">
                   Start Your Journey <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
             
-            <Card className="bg-white/80 backdrop-blur-sm border-pink-200 shadow-lg overflow-hidden rounded-2xl">
-              <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">
+            <Card className="border border-gray-200 shadow-sm overflow-hidden rounded-lg">
+              <CardHeader className="bg-[#9B6BFB] text-white">
                 <CardTitle>
                   <div className="flex items-center gap-2">
                     <Heart className="text-white" />
@@ -134,8 +134,8 @@ const Index = () => {
                   <ProfileCard key={index} profile={profile} />
                 ))}
               </CardContent>
-              <CardFooter className="justify-center border-t border-pink-100 pt-4 pb-6">
-                <Button variant="outline" className="w-full border-pink-300 hover:bg-pink-50">
+              <CardFooter className="justify-center border-t border-gray-100 pt-4 pb-6">
+                <Button variant="outline" className="w-full border-[#9B6BFB] text-[#9B6BFB] hover:bg-[#F5F2FF]">
                   <Users className="mr-2 h-4 w-4" />
                   View More Matches
                 </Button>
@@ -143,12 +143,12 @@ const Index = () => {
             </Card>
           </div>
           
-          <div className="max-w-3xl mx-auto text-center bg-white/70 backdrop-blur-sm p-8 rounded-2xl shadow-md border border-pink-100">
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-pink-500 text-transparent bg-clip-text">Ready to find your cosmic match?</h2>
-            <p className="text-gray-600 mb-8">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-2xl font-bold mb-4 text-[#9B6BFB]">Ready to find your cosmic match?</h2>
+            <p className="text-gray-600 mb-6">
               Join thousands of South Asians who found their perfect match with Aunty's wisdom.
             </p>
-            <Button asChild size="lg" className="bg-gradient-to-r from-purple-600 to-pink-500 hover:opacity-90 px-8 py-6 rounded-xl">
+            <Button asChild size="lg" className="bg-[#9B6BFB] hover:bg-[#8A5CF5] text-white px-6 py-5 rounded-md">
               <Link to="/signup">Create Your Profile</Link>
             </Button>
           </div>

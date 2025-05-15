@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -19,16 +18,16 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 py-12 px-4">
+    <div className="min-h-screen bg-white py-12 px-4">
       <div className="container mx-auto max-w-md">
-        <Link to="/" className="inline-flex items-center text-purple-700 hover:text-purple-900 mb-6">
+        <Link to="/" className="inline-flex items-center text-[#9B6BFB] hover:text-[#8A5CF5] mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Home
         </Link>
         
-        <Card className="border-purple-200">
+        <Card className="border-gray-200 shadow-sm">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center text-purple-800">Create your profile</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center text-[#9B6BFB]">Create your profile</CardTitle>
             <CardDescription className="text-center">
               Tell us about yourself so Aunty can find your perfect match
             </CardDescription>
@@ -168,14 +167,14 @@ const SignUp = () => {
                   <Input placeholder="Where were you born?" />
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-purple-700 hover:bg-purple-800">
+              <Button type="submit" className="w-full bg-[#9B6BFB] hover:bg-[#8A5CF5] text-white">
                 Continue to Step 2
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-center border-t border-purple-100 pt-4">
+          <CardFooter className="flex justify-center border-t border-gray-100 pt-4">
             <p className="text-sm text-gray-500">
-              Already have an account? <Link to="/login" className="text-purple-700 hover:underline">Log in</Link>
+              Already have an account? <Link to="/login" className="text-[#9B6BFB] hover:underline">Log in</Link>
             </p>
           </CardFooter>
         </Card>
