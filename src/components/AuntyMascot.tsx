@@ -1,6 +1,11 @@
 
 import React from "react";
 
+/**
+ * © Copyright 2025 - All Rights Reserved
+ * Proprietary and confidential.
+ * Unauthorized copying or distribution of this file is strictly prohibited.
+ */
 const AuntyMascot = () => {
   return (
     <div className="relative inline-block">
