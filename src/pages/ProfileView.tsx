@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Edit, Calendar, Settings } from "lucide-react";
@@ -6,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { InfoTooltip } from "@/components/InfoTooltip";
+import InfoTooltip from "@/components/InfoTooltip";
 
 // Sample profile data (would come from API/state in real app)
 const profileData = {
