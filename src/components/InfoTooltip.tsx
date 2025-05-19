@@ -13,9 +13,9 @@ const InfoTooltip: React.FC<InfoTooltipProps> = ({ text, className }) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Info className={`h-4 w-4 text-[#6d4773]/70 cursor-help ${className}`} />
+          <Info className={`h-4 w-4 text-[#6d4773]/70 cursor-help hover:text-[#6d4773] transition-colors ${className}`} />
         </TooltipTrigger>
-        <TooltipContent className="bg-white text-[#6d4773] border border-[#e45964]/20 max-w-xs">
+        <TooltipContent className="bg-white text-[#6d4773] border border-[#e45964]/20 max-w-xs shadow-sm">
           <p className="text-sm">{text}</p>
         </TooltipContent>
       </Tooltip>
