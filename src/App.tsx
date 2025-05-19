@@ -10,6 +10,7 @@ import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
 import MatchView from "./pages/MatchView";
 import ProfileView from "./pages/ProfileView";
+import MainNav from "./components/MainNav";
 
 /**
  * © Copyright 2025 - All Rights Reserved
@@ -60,6 +61,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <MainNav />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/signup" element={<SignUp />} />
