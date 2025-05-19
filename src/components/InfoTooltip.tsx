@@ -5,17 +5,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 interface InfoTooltipProps {
   text: string;
+  className?: string;
 }
 
-const InfoTooltip: React.FC<InfoTooltipProps> = ({ text }) => {
+const InfoTooltip: React.FC<InfoTooltipProps> = ({ text, className }) => {
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Info className="h-4 w-4 text-[#6d4773]/60 cursor-help" />
+          <Info className={`h-4 w-4 text-[#6d4773]/70 cursor-help ${className}`} />
         </TooltipTrigger>
         <TooltipContent className="bg-white text-[#6d4773] border border-[#e45964]/20 max-w-xs">
-          <p className="text-xs">{text}</p>
+          <p className="text-sm">{text}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
