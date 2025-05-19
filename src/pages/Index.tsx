@@ -53,18 +53,15 @@ const Index = () => {
               <AuntyMascot />
             </div>
 
-            <div className="bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 mb-8 shadow-lg border-2 border-[#F97316] border-dashed">
-              <div className="flex items-center justify-center gap-2 text-[#6d4773] mb-2">
-                <Gift className="h-5 w-5" />
-                <p className="text-lg font-bold">
-                  Free For Life
+            <div className="bg-[#faf3eb] bg-opacity-80 backdrop-blur-sm rounded-xl p-4 mb-8 shadow-md">
+              <div className="flex items-center justify-center gap-2 text-[#6d4773] mb-1">
+                <Gift className="h-4 w-4 text-[#6d4773]" />
+                <p className="text-[#6d4773]">
+                  Free for Life
                 </p>
               </div>
-              <p className="text-[#6d4773] font-semibold">
-                Only <span className="text-[#F97316] font-bold text-xl">{remainingFreeSlots.toLocaleString()}</span> spots left!
-              </p>
-              <p className="text-xs text-[#6d4773] mt-1">
-                (But you'll find your match so fast, you won't need it anyway 😉)
+              <p className="text-[#6d4773]">
+                Only {remainingFreeSlots.toLocaleString()} spots left
               </p>
             </div>
 
@@ -135,9 +132,9 @@ const Index = () => {
                 </div>
               </div>
               
-              <div className="mt-8 bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 shadow-lg border-2 border-[#F97316] border-dashed text-[#6d4773]">
-                <p className="font-semibold">First {maxFreeUsers.toLocaleString()} users: <span className="underline">Free for Life</span></p>
-                <p className="text-sm mt-1"><span className="font-bold text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> spots left!</p>
+              <div className="mt-8 bg-[#faf3eb] bg-opacity-80 backdrop-blur-sm rounded-xl p-4 shadow-md text-[#6d4773]">
+                <p>First {maxFreeUsers.toLocaleString()} users: Free for Life</p>
+                <p className="text-sm mt-1">{remainingFreeSlots.toLocaleString()} spots left</p>
               </div>
               
               <Button 
@@ -182,9 +179,9 @@ const Index = () => {
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-2xl font-bold mb-4 text-[#faf3eb]">Ready to meet your match?</h2>
             
-            <div className="bg-[#FDE1D3] bg-opacity-90 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-lg border-2 border-[#F97316] border-dashed">
-              <p className="font-bold text-[#6d4773]">
-                <span className="text-xl text-[#F97316]">{remainingFreeSlots.toLocaleString()}</span> free spots left
+            <div className="bg-[#faf3eb] bg-opacity-80 backdrop-blur-sm rounded-xl p-4 mb-6 shadow-md">
+              <p className="text-[#6d4773]">
+                {remainingFreeSlots.toLocaleString()} free spots left
               </p>
             </div>
             
