@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import Index from "./pages/Index";
 import SignUp from "./pages/SignUp";
 import NotFound from "./pages/NotFound";
+import MatchView from "./pages/MatchView";
+import ProfileView from "./pages/ProfileView";
 
 /**
  * © Copyright 2025 - All Rights Reserved
@@ -61,6 +63,8 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/match" element={<MatchView />} />
+            <Route path="/profile" element={<ProfileView />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
