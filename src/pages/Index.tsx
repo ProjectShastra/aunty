@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,10 +5,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Heart, Users, ArrowRight, Gift } from "lucide-react";
 import ProfileCard from "@/components/ProfileCard";
 import AuntyMascot from "@/components/AuntyMascot";
+import ProfileCardsList from "@/components/ProfileCardsList";
+import ProfileCardsCarousel from "@/components/ProfileCardsCarousel";
 
 const Index = () => {
   const [showIntro, setShowIntro] = useState(true);
   const [signups, setSignups] = useState(3182);
+  const [showCarousel, setShowCarousel] = useState(false);
   const maxFreeUsers = 5000; // Total free slots available
   const remainingFreeSlots = Math.max(0, maxFreeUsers - signups);
   
@@ -147,33 +149,30 @@ const Index = () => {
               </Button>
             </div>
             
-            <Card className="border-0 shadow-lg overflow-hidden rounded-lg bg-[#faf3eb]">
-              <CardHeader className="bg-[#6d4773] text-[#faf3eb]">
-                <CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Heart className="text-[#faf3eb]" />
-                    <span>Top Matches</span>
-                  </div>
-                </CardTitle>
-                <CardDescription className="text-[#faf3eb] opacity-90">
-                  See how our matching works
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4 p-6">
-                {sampleProfiles.map((profile, index) => (
-                  <ProfileCard key={index} profile={profile} />
-                ))}
-              </CardContent>
-              <CardFooter className="justify-center border-t border-gray-100 pt-4 pb-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-4 mb-2">
                 <Button 
-                  variant="outline" 
-                  className="w-full border-[#6d4773] text-[#6d4773] hover:bg-[#f5e9d7]"
+                  variant="ghost" 
+                  className={`px-3 py-2 ${!showCarousel ? "bg-[#faf3eb]/20" : ""}`}
+                  onClick={() => setShowCarousel(false)}
                 >
-                  <Users className="mr-2 h-4 w-4" />
-                  See More Matches
+                  List View
                 </Button>
-              </CardFooter>
-            </Card>
+                <Button 
+                  variant="ghost"
+                  className={`px-3 py-2 ${showCarousel ? "bg-[#faf3eb]/20" : ""}`}
+                  onClick={() => setShowCarousel(true)}
+                >
+                  Carousel
+                </Button>
+              </div>
+              
+              {showCarousel ? (
+                <ProfileCardsCarousel profiles={sampleProfiles} />
+              ) : (
+                <ProfileCardsList profiles={sampleProfiles} />
+              )}
+            </div>
           </div>
           
           <div className="max-w-2xl mx-auto text-center">
