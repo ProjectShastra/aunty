@@ -19,6 +19,7 @@ import {
   CarouselPrevious
 } from "@/components/ui/carousel";
 import AuntyMascot from "@/components/AuntyMascot";
+import InfoTooltip from "@/components/InfoTooltip";
 
 // Sample match data (would come from API/props in real app)
 const matchData = {
@@ -29,19 +30,19 @@ const matchData = {
   imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80",
   compatibilityTags: [
     { 
-      tag: "Spiritual Match", 
-      explanation: "Your Venus and Jupiter are in harmony, creating a profound spiritual connection",
-      icon: Star
+      tag: "Strong Communication", 
+      explanation: "Your Venus and Jupiter are in harmony, creating a clear communication channel",
+      icon: MessageCircle
     },
     { 
-      tag: "Emotional Chemistry", 
+      tag: "Emotional Sync", 
       explanation: "Moon signs in friendly nakshatras promote deep emotional understanding",
       icon: Heart 
     },
     { 
-      tag: "Dharma-Aligned", 
+      tag: "Shared Alignment", 
       explanation: "Similar life paths and complementary Saturn placements",
-      icon: MessageCircle 
+      icon: Star 
     }
   ],
   astrologyHighlights: [
@@ -60,29 +61,39 @@ const MatchView = () => {
     <div className="container max-w-md mx-auto px-4 py-6">
       <div className="text-center mb-6">
         <div className="inline-block bg-[#faf3eb] px-3 py-1 rounded-full text-[#6d4773] text-xs font-medium mb-3">
-          Celestial Connection
+          Compatibility Insights
         </div>
         <h1 className="text-2xl md:text-3xl font-light text-[#6d4773] mb-2">
-          Your Divine Match
+          Your Aligned Match
         </h1>
         <p className="text-[#6d4773]/70 max-w-md mx-auto">
-          Aunty has found someone whose stars align beautifully with yours
+          We've found someone whose energies complement yours beautifully
         </p>
       </div>
 
       <Card className="overflow-hidden border-0 shadow-md bg-white/90 rounded-2xl">
         <CardContent className="p-0">
           <div className="flex flex-col">
+            {/* Profile Image Section */}
             <div className="bg-[#faf3eb]/50 p-6 flex flex-col items-center">
-              <Avatar className="h-28 w-28 mb-4 border-2 border-[#e5deff]">
-                <AvatarImage src={matchData.imageUrl} alt={matchData.name} />
-                <AvatarFallback className="bg-[#e45964]/10 text-[#6d4773]">
-                  {matchData.name.substring(0, 2)}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative">
+                <Avatar className="h-28 w-28 mb-4 border-2 border-[#e5deff]">
+                  <AvatarImage src={matchData.imageUrl} alt={matchData.name} />
+                  <AvatarFallback className="bg-[#e45964]/10 text-[#6d4773]">
+                    {matchData.name.substring(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="absolute -bottom-2 right-0 bg-white p-1 rounded-full">
+                  <InfoTooltip 
+                    text="Based on your combined planetary positions and elements" 
+                    className="h-5 w-5 text-[#6d4773]"
+                  />
+                </div>
+              </div>
               <h2 className="text-xl font-medium text-[#6d4773]">{matchData.name}, {matchData.age}</h2>
               <p className="text-[#6d4773]/70 text-sm">{matchData.location}</p>
               
+              {/* Astrological Highlights - Now more human focused */}
               <div className="mt-4 space-y-2 w-full">
                 {matchData.astrologyHighlights.map((highlight, idx) => (
                   <div key={idx} className="bg-white/70 rounded-lg p-3 text-sm text-[#6d4773] text-center">
@@ -93,7 +104,11 @@ const MatchView = () => {
             </div>
 
             <div className="p-6">
-              <h3 className="text-sm font-medium text-[#6d4773] mb-3">Cosmic Connection Points</h3>
+              {/* Compatibility points with icons */}
+              <h3 className="text-sm font-medium text-[#6d4773] mb-3 flex items-center gap-2">
+                Key Alignment Points
+                <InfoTooltip text="These areas show your strongest compatibility potentials" />
+              </h3>
               <div className="flex flex-wrap gap-2 mb-6">
                 {matchData.compatibilityTags.map((item, index) => {
                   const IconComponent = item.icon;
@@ -117,8 +132,9 @@ const MatchView = () => {
 
               <Separator className="my-5 bg-[#faf3eb]" />
               
+              {/* Aunty's Insights Carousel */}
               <div className="flex items-center mb-4">
-                <h3 className="text-base font-medium text-[#6d4773]">Aunty's Wisdom Cards</h3>
+                <h3 className="text-base font-medium text-[#6d4773]">Compatibility Insights</h3>
               </div>
               
               <Carousel className="w-full">
@@ -131,7 +147,7 @@ const MatchView = () => {
                             {index + 1}
                           </div>
                         </div>
-                        <p className="text-[#6d4773] text-sm italic mt-3">
+                        <p className="text-[#6d4773] text-sm mt-3">
                           "{insight}"
                         </p>
                       </div>
@@ -142,6 +158,7 @@ const MatchView = () => {
                 <CarouselNext className="-right-3 h-7 w-7 bg-white hover:bg-gray-100 border-none shadow-sm" />
               </Carousel>
               
+              {/* CTA Button */}
               <div className="mt-6 flex">
                 <Button 
                   className="w-full bg-[#e5deff] hover:bg-[#e5deff]/80 text-[#6d4773] mt-2 py-6 rounded-xl"
@@ -150,7 +167,7 @@ const MatchView = () => {
                     <div className="h-8 w-8">
                       <AuntyMascot />
                     </div>
-                    <span>See More Matches from Aunty</span>
+                    <span>See More Compatible Matches</span>
                   </div>
                 </Button>
               </div>
