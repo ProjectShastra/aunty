@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -322,11 +321,10 @@ const MatchView = () => {
             {matchData.conversationStarters.map((starter, index) => (
               <div 
                 key={index} 
-                className="p-3 rounded-md cursor-pointer transition-colors"
+                className="p-3 rounded-md cursor-pointer transition-colors hover:bg-opacity-80"
                 style={{ 
                   backgroundColor: `${colors.cardBg}/50`,
-                  color: colors.primary,
-                  ":hover": { backgroundColor: colors.cardBg }
+                  color: colors.primary
                 }}
               >
                 {starter}
