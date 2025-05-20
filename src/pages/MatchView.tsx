@@ -1,8 +1,8 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Star, Heart } from "lucide-react";
+import { MessageCircle, Star, Heart, ChevronDown } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -18,8 +18,14 @@ import {
   CarouselNext,
   CarouselPrevious
 } from "@/components/ui/carousel";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "@/components/ui/collapsible";
 import AuntyMascot from "@/components/AuntyMascot";
 import InfoTooltip from "@/components/InfoTooltip";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Sample match data (would come from API/props in real app)
 const matchData = {
@@ -53,25 +59,32 @@ const matchData = {
     "Your Moon signs align for emotional trust. Her Jupiter aspects your Sun, bringing growth and prosperity to your union.",
     "The Venus-Moon connection I see here creates a foundation of mutual care and appreciation for beauty.",
     "Both of your 7th house rulers are friendly to each other - this is a match that grows stronger with time."
+  ],
+  conversationStarters: [
+    "Your chart says you're a great listener — is that true?",
+    "What's your love language — or do you just speak vibes?",
+    "Would you rather talk astrology, art, or what you made for dinner?"
   ]
 };
 
 const MatchView = () => {
+  const [showConversationStarters, setShowConversationStarters] = useState(false);
+
   return (
     <div className="container max-w-md mx-auto px-4 py-6">
       <div className="text-center mb-6">
         <div className="inline-block bg-[#faf3eb] px-3 py-1 rounded-full text-[#6d4773] text-xs font-medium mb-3">
-          Compatibility Insights
+          Your Match Map
         </div>
         <h1 className="text-2xl md:text-3xl font-light text-[#6d4773] mb-2">
           Your Aligned Match
         </h1>
         <p className="text-[#6d4773]/70 max-w-md mx-auto">
-          We've found someone whose energies complement yours beautifully
+          Compatibility backed by 5,000 years of insight
         </p>
       </div>
 
-      <Card className="overflow-hidden border-0 shadow-md bg-white/90 rounded-2xl">
+      <Card className="overflow-hidden border-0 shadow-md bg-white/90 rounded-2xl mb-6">
         <CardContent className="p-0">
           <div className="flex flex-col">
             {/* Profile Image Section */}
@@ -91,10 +104,10 @@ const MatchView = () => {
                 </div>
               </div>
               <h2 className="text-xl font-medium text-[#6d4773]">{matchData.name}, {matchData.age}</h2>
-              <p className="text-[#6d4773]/70 text-sm">{matchData.location}</p>
+              <p className="text-[#6d4773]/70 text-sm mb-3">{matchData.location}</p>
               
               {/* Astrological Highlights - Now more human focused */}
-              <div className="mt-4 space-y-2 w-full">
+              <div className="mt-2 space-y-2 w-full">
                 {matchData.astrologyHighlights.map((highlight, idx) => (
                   <div key={idx} className="bg-white/70 rounded-lg p-3 text-sm text-[#6d4773] text-center">
                     {highlight}
@@ -175,6 +188,51 @@ const MatchView = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* First Message Prompt Section */}
+      <Collapsible 
+        className="rounded-lg bg-white border border-[#e5deff] shadow-sm mb-6"
+        open={showConversationStarters}
+        onOpenChange={setShowConversationStarters}
+      >
+        <CollapsibleTrigger className="flex w-full items-center justify-between p-4 text-[#6d4773]">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5" />
+            <span className="font-medium">Not sure how to start? Let Aunty suggest an opener</span>
+          </div>
+          <ChevronDown className={`h-5 w-5 transform transition-transform ${showConversationStarters ? 'rotate-180' : ''}`} />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="px-4 pb-4 space-y-3">
+            {matchData.conversationStarters.map((starter, index) => (
+              <div 
+                key={index} 
+                className="p-3 rounded-md bg-[#faf3eb]/50 text-[#6d4773] cursor-pointer hover:bg-[#faf3eb] transition-colors"
+              >
+                {starter}
+              </div>
+            ))}
+            <p className="text-xs italic text-[#6d4773]/70 pt-2">
+              "Start soft, stay curious. Cosmic chemistry begins with conversation."
+            </p>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* Conflict Window Warning */}
+      <Alert className="bg-[#ffe6e8]/30 border-[#e45964]/20 mb-4">
+        <AlertTitle className="text-[#e45964] flex items-center gap-1.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-alert-circle">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          Heads up — energies might be intense this week
+        </AlertTitle>
+        <AlertDescription className="text-sm text-[#6d4773]">
+          Mars is creating some tension. Take extra care with communication until May 25th.
+        </AlertDescription>
+      </Alert>
     </div>
   );
 };
