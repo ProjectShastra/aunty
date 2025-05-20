@@ -26,6 +26,8 @@ import {
 import AuntyMascot from "@/components/AuntyMascot";
 import InfoTooltip from "@/components/InfoTooltip";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
+import { useTheme } from "@/theme/ThemeContext";
 
 // Sample match data (would come from API/props in real app)
 const matchData = {
@@ -69,47 +71,103 @@ const matchData = {
 
 const MatchView = () => {
   const [showConversationStarters, setShowConversationStarters] = useState(false);
+  const { currentTheme } = useTheme();
+  const { colors } = currentTheme;
+
+  const getThemedClasses = (baseClass: string) => {
+    switch (currentTheme.name) {
+      case 'earth':
+        return baseClass.replace(/\[#[0-9a-fA-F]+\]/g, '');
+      case 'mystical':
+        return baseClass.replace(/\[#[0-9a-fA-F]+\]/g, '');
+      default:
+        return baseClass;
+    }
+  };
 
   return (
-    <div className="container max-w-md mx-auto px-4 py-6">
+    <div className="container max-w-md mx-auto px-4 py-6" 
+      style={{
+        backgroundColor: colors.background,
+        color: colors.text
+      }}
+    >
       <div className="text-center mb-6">
-        <div className="inline-block bg-[#faf3eb] px-3 py-1 rounded-full text-[#6d4773] text-xs font-medium mb-3">
-          Your Match Map
+        <div className="flex justify-between items-center mb-3">
+          <div 
+            className="inline-block px-3 py-1 rounded-full text-xs font-medium"
+            style={{
+              backgroundColor: colors.cardBg,
+              color: colors.primary
+            }}
+          >
+            Your Match Map
+          </div>
+          <ThemeSwitcher />
         </div>
-        <h1 className="text-2xl md:text-3xl font-light text-[#6d4773] mb-2">
+        <h1 
+          className={`text-2xl md:text-3xl font-light mb-2 ${currentTheme.typography === 'playful' ? 'font-sans' : 'font-serif'}`}
+          style={{ color: colors.primary }}
+        >
           Your Aligned Match
         </h1>
-        <p className="text-[#6d4773]/70 max-w-md mx-auto">
+        <p style={{ color: colors.textMuted }}>
           Compatibility backed by 5,000 years of insight
         </p>
       </div>
 
-      <Card className="overflow-hidden border-0 shadow-md bg-white/90 rounded-2xl mb-6">
+      <Card className="overflow-hidden border-0 shadow-md rounded-2xl mb-6" 
+        style={{ backgroundColor: `${colors.background}/90` }}
+      >
         <CardContent className="p-0">
           <div className="flex flex-col">
             {/* Profile Image Section */}
-            <div className="bg-[#faf3eb]/50 p-6 flex flex-col items-center">
+            <div 
+              className="p-6 flex flex-col items-center"
+              style={{ backgroundColor: `${colors.cardBg}/50` }}
+            >
               <div className="relative">
-                <Avatar className="h-28 w-28 mb-4 border-2 border-[#e5deff]">
+                <Avatar 
+                  className="h-28 w-28 mb-4 border-2" 
+                  style={{ borderColor: colors.highlight }}
+                >
                   <AvatarImage src={matchData.imageUrl} alt={matchData.name} />
-                  <AvatarFallback className="bg-[#e45964]/10 text-[#6d4773]">
+                  <AvatarFallback 
+                    style={{ 
+                      backgroundColor: `${colors.secondary}/10`, 
+                      color: colors.primary 
+                    }}
+                  >
                     {matchData.name.substring(0, 2)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-2 right-0 bg-white p-1 rounded-full">
                   <InfoTooltip 
                     text="Based on your combined planetary positions and elements" 
-                    className="h-5 w-5 text-[#6d4773]"
+                    className="h-5 w-5"
+                    style={{ color: colors.primary }}
                   />
                 </div>
               </div>
-              <h2 className="text-xl font-medium text-[#6d4773]">{matchData.name}, {matchData.age}</h2>
-              <p className="text-[#6d4773]/70 text-sm mb-3">{matchData.location}</p>
+              <h2 
+                className="text-xl font-medium"
+                style={{ color: colors.primary }}
+              >
+                {matchData.name}, {matchData.age}
+              </h2>
+              <p style={{ color: colors.textMuted }} className="text-sm mb-3">{matchData.location}</p>
               
               {/* Astrological Highlights - Now more human focused */}
               <div className="mt-2 space-y-2 w-full">
                 {matchData.astrologyHighlights.map((highlight, idx) => (
-                  <div key={idx} className="bg-white/70 rounded-lg p-3 text-sm text-[#6d4773] text-center">
+                  <div 
+                    key={idx} 
+                    className="rounded-lg p-3 text-sm text-center"
+                    style={{ 
+                      backgroundColor: `${colors.background}/70`,
+                      color: colors.primary 
+                    }}
+                  >
                     {highlight}
                   </div>
                 ))}
@@ -118,7 +176,10 @@ const MatchView = () => {
 
             <div className="p-6">
               {/* Compatibility points with icons */}
-              <h3 className="text-sm font-medium text-[#6d4773] mb-3 flex items-center gap-2">
+              <h3 
+                className="text-sm font-medium mb-3 flex items-center gap-2"
+                style={{ color: colors.primary }}
+              >
                 Key Alignment Points
                 <InfoTooltip text="These areas show your strongest compatibility potentials" />
               </h3>
@@ -129,13 +190,24 @@ const MatchView = () => {
                     <HoverCard key={index}>
                       <HoverCardTrigger asChild>
                         <Badge 
-                          className="bg-[#e5deff] hover:bg-[#e5deff]/80 text-[#6d4773] border-0 cursor-help flex items-center gap-1.5 py-1.5"
+                          className="hover:bg-opacity-80 border-0 cursor-help flex items-center gap-1.5 py-1.5"
+                          style={{ 
+                            backgroundColor: colors.highlight,
+                            color: colors.primary
+                          }}
                         >
                           <IconComponent className="h-3.5 w-3.5" />
                           {item.tag}
                         </Badge>
                       </HoverCardTrigger>
-                      <HoverCardContent className="bg-white text-[#6d4773] border border-[#e45964]/10 w-64">
+                      <HoverCardContent 
+                        className="border w-64"
+                        style={{ 
+                          backgroundColor: colors.background,
+                          color: colors.primary,
+                          borderColor: `${colors.border}` 
+                        }}
+                      >
                         <p className="text-sm">{item.explanation}</p>
                       </HoverCardContent>
                     </HoverCard>
@@ -143,38 +215,74 @@ const MatchView = () => {
                 })}
               </div>
 
-              <Separator className="my-5 bg-[#faf3eb]" />
+              <Separator className="my-5" style={{ backgroundColor: colors.cardBg }} />
               
               {/* Aunty's Insights Carousel */}
               <div className="flex items-center mb-4">
-                <h3 className="text-base font-medium text-[#6d4773]">Compatibility Insights</h3>
+                <h3 
+                  className="text-base font-medium"
+                  style={{ color: colors.primary }}
+                >
+                  Compatibility Insights
+                </h3>
               </div>
               
               <Carousel className="w-full">
                 <CarouselContent>
                   {matchData.auntysInsights.map((insight, index) => (
                     <CarouselItem key={index}>
-                      <div className="bg-[#faf3eb]/60 rounded-xl p-4 text-center relative">
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-white rounded-full p-1 shadow-sm">
-                          <div className="h-6 w-6 rounded-full bg-[#e5deff] flex items-center justify-center text-[#6d4773] font-medium">
+                      <div 
+                        className="rounded-xl p-4 text-center relative"
+                        style={{ backgroundColor: `${colors.cardBg}/60` }}
+                      >
+                        <div 
+                          className="absolute -top-4 left-1/2 transform -translate-x-1/2 rounded-full p-1 shadow-sm"
+                          style={{ backgroundColor: colors.background }}
+                        >
+                          <div 
+                            className="h-6 w-6 rounded-full flex items-center justify-center font-medium"
+                            style={{ 
+                              backgroundColor: colors.highlight,
+                              color: colors.primary
+                            }}
+                          >
                             {index + 1}
                           </div>
                         </div>
-                        <p className="text-[#6d4773] text-sm mt-3">
+                        <p 
+                          className="text-sm mt-3"
+                          style={{ color: colors.primary }}
+                        >
                           "{insight}"
                         </p>
                       </div>
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="-left-3 h-7 w-7 bg-white hover:bg-gray-100 border-none shadow-sm" />
-                <CarouselNext className="-right-3 h-7 w-7 bg-white hover:bg-gray-100 border-none shadow-sm" />
+                <CarouselPrevious 
+                  className="-left-3 h-7 w-7 border-none shadow-sm" 
+                  style={{ 
+                    backgroundColor: colors.background,
+                    color: colors.primary 
+                  }}
+                />
+                <CarouselNext 
+                  className="-right-3 h-7 w-7 border-none shadow-sm" 
+                  style={{ 
+                    backgroundColor: colors.background,
+                    color: colors.primary 
+                  }}
+                />
               </Carousel>
               
               {/* CTA Button */}
               <div className="mt-6 flex">
                 <Button 
-                  className="w-full bg-[#e5deff] hover:bg-[#e5deff]/80 text-[#6d4773] mt-2 py-6 rounded-xl"
+                  className="w-full mt-2 py-6 rounded-xl"
+                  style={{ 
+                    backgroundColor: colors.highlight,
+                    color: colors.primary
+                  }}
                 >
                   <div className="flex items-center justify-center w-full gap-2">
                     <div className="h-8 w-8">
@@ -191,11 +299,18 @@ const MatchView = () => {
 
       {/* First Message Prompt Section */}
       <Collapsible 
-        className="rounded-lg bg-white border border-[#e5deff] shadow-sm mb-6"
+        className="rounded-lg border shadow-sm mb-6"
         open={showConversationStarters}
         onOpenChange={setShowConversationStarters}
+        style={{ 
+          backgroundColor: colors.background,
+          borderColor: colors.highlight
+        }}
       >
-        <CollapsibleTrigger className="flex w-full items-center justify-between p-4 text-[#6d4773]">
+        <CollapsibleTrigger 
+          className="flex w-full items-center justify-between p-4"
+          style={{ color: colors.primary }}
+        >
           <div className="flex items-center gap-2">
             <MessageCircle className="h-5 w-5" />
             <span className="font-medium">Not sure how to start? Let Aunty suggest an opener</span>
@@ -207,12 +322,20 @@ const MatchView = () => {
             {matchData.conversationStarters.map((starter, index) => (
               <div 
                 key={index} 
-                className="p-3 rounded-md bg-[#faf3eb]/50 text-[#6d4773] cursor-pointer hover:bg-[#faf3eb] transition-colors"
+                className="p-3 rounded-md cursor-pointer transition-colors"
+                style={{ 
+                  backgroundColor: `${colors.cardBg}/50`,
+                  color: colors.primary,
+                  ":hover": { backgroundColor: colors.cardBg }
+                }}
               >
                 {starter}
               </div>
             ))}
-            <p className="text-xs italic text-[#6d4773]/70 pt-2">
+            <p 
+              className="text-xs italic pt-2"
+              style={{ color: colors.textMuted }}
+            >
               "Start soft, stay curious. Cosmic chemistry begins with conversation."
             </p>
           </div>
@@ -220,8 +343,17 @@ const MatchView = () => {
       </Collapsible>
 
       {/* Conflict Window Warning */}
-      <Alert className="bg-[#ffe6e8]/30 border-[#e45964]/20 mb-4">
-        <AlertTitle className="text-[#e45964] flex items-center gap-1.5">
+      <Alert 
+        className="mb-4 border"
+        style={{ 
+          backgroundColor: `${colors.secondary}/10`,
+          borderColor: `${colors.secondary}/20`
+        }}
+      >
+        <AlertTitle 
+          className="flex items-center gap-1.5"
+          style={{ color: colors.secondary }}
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-alert-circle">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -229,7 +361,10 @@ const MatchView = () => {
           </svg>
           Heads up — energies might be intense this week
         </AlertTitle>
-        <AlertDescription className="text-sm text-[#6d4773]">
+        <AlertDescription 
+          className="text-sm"
+          style={{ color: colors.primary }}
+        >
           Mars is creating some tension. Take extra care with communication until May 25th.
         </AlertDescription>
       </Alert>
