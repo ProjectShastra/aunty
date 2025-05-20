@@ -8,7 +8,7 @@ interface InfoTooltipProps {
   className?: string;
 }
 
-const InfoTooltip: React.FC<InfoTooltipProps> = ({ text, className }) => {
+const InfoTooltip = ({ text, className }: InfoTooltipProps) => {
   return (
     <TooltipProvider>
       <Tooltip>
