@@ -296,7 +296,7 @@ const MatchView = () => {
         </CardContent>
       </Card>
 
-      {/* First Message Prompt Section */}
+      {/* Collapsible for conversation starters */}
       <Collapsible 
         className="rounded-lg border shadow-sm mb-6"
         open={showConversationStarters}
