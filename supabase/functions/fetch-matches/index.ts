@@ -8,26 +8,22 @@ const corsHeaders = {
 
 /**
  * Nadi (pulse) group for compatibility checking
- * Each nakshatra belongs to one of 3 Nadis: Aadi, Madhya, Antya
  */
 const NAKSHATRA_TO_NADI: Record<number, string> = {
-  1: 'Aadi', 2: 'Madhya', 3: 'Antya',    // Ashwini, Bharani, Krittika
-  4: 'Antya', 5: 'Madhya', 6: 'Aadi',    // Rohini, Mrigashira, Ardra
-  7: 'Aadi', 8: 'Madhya', 9: 'Antya',    // Punarvasu, Pushya, Ashlesha
-  10: 'Aadi', 11: 'Madhya', 12: 'Antya', // Magha, Purva Phalguni, Uttara Phalguni
-  13: 'Antya', 14: 'Madhya', 15: 'Aadi', // Hasta, Chitra, Swati
-  16: 'Aadi', 17: 'Madhya', 18: 'Antya', // Vishakha, Anuradha, Jyeshtha
-  19: 'Aadi', 20: 'Madhya', 21: 'Antya', // Mula, Purva Ashadha, Uttara Ashadha
-  22: 'Antya', 23: 'Madhya', 24: 'Aadi', // Shravana, Dhanishta, Shatabhisha
-  25: 'Aadi', 26: 'Madhya', 27: 'Antya', // Purva Bhadrapada, Uttara Bhadrapada, Revati
+  1: 'Aadi', 2: 'Madhya', 3: 'Antya',
+  4: 'Antya', 5: 'Madhya', 6: 'Aadi',
+  7: 'Aadi', 8: 'Madhya', 9: 'Antya',
+  10: 'Aadi', 11: 'Madhya', 12: 'Antya',
+  13: 'Antya', 14: 'Madhya', 15: 'Aadi',
+  16: 'Aadi', 17: 'Madhya', 18: 'Antya',
+  19: 'Aadi', 20: 'Madhya', 21: 'Antya',
+  22: 'Antya', 23: 'Madhya', 24: 'Aadi',
+  25: 'Aadi', 26: 'Madhya', 27: 'Antya',
 };
 
-/**
- * Get Nakshatra Pada (quarter) from moon longitude in vedic chart
- */
 function getPadaFromChart(vedicChart: any): number {
   if (!vedicChart?.moon?.nakshatraPada) {
-    return 1; // Default to pada 1 if not available
+    return 1;
   }
   return vedicChart.moon.nakshatraPada;
 }
@@ -48,15 +44,17 @@ interface Profile {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    
+    // Create admin client for secure operations
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get the authorization header
     const authHeader = req.headers.get("Authorization");
@@ -67,8 +65,8 @@ serve(async (req) => {
       );
     }
 
-    // Create client with user's token
-    const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+    // Create client with user's token to verify auth
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } }
     });
 
@@ -81,8 +79,8 @@ serve(async (req) => {
       );
     }
 
-    // Get current user's profile
-    const { data: currentProfile, error: profileError } = await supabase
+    // Get current user's profile using admin client
+    const { data: currentProfile, error: profileError } = await adminClient
       .from("profiles")
       .select("*")
       .eq("user_id", user.id)
@@ -95,31 +93,16 @@ serve(async (req) => {
       );
     }
 
-    // Determine gender filter based on looking_for preference
-    let genderFilter: string[] = [];
-    if (currentProfile.looking_for === 'men') {
-      genderFilter = ['male'];
-    } else if (currentProfile.looking_for === 'women') {
-      genderFilter = ['female'];
-    } else {
-      genderFilter = ['male', 'female', 'nonbinary'];
-    }
+    // Use the secure discovery function to get profiles
+    const { data: discoveryProfiles, error: discoveryError } = await adminClient
+      .rpc('get_discovery_profiles', {
+        p_user_id: user.id,
+        p_looking_for: currentProfile.looking_for,
+        p_limit: 50
+      });
 
-    // Fetch all other completed profiles
-    let query = supabase
-      .from("profiles")
-      .select("*")
-      .neq("user_id", user.id)
-      .eq("onboarding_complete", true);
-
-    // Apply gender filter
-    if (genderFilter.length > 0) {
-      query = query.in("gender", genderFilter);
-    }
-
-    const { data: allProfiles, error: fetchError } = await query;
-
-    if (fetchError) {
+    if (discoveryError) {
+      console.error("Discovery function error:", discoveryError);
       return new Response(
         JSON.stringify({ error: "Failed to fetch profiles" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -133,49 +116,40 @@ serve(async (req) => {
     const currentAtmakaraka = currentProfile.atmakaraka_planet;
 
     // FILTER 1: Remove Nadi Dosha matches (same Nadi, same Pada)
-    let filteredProfiles = (allProfiles || []).filter((profile: Profile) => {
+    let filteredProfiles = (discoveryProfiles || []).filter((profile: Profile) => {
       if (!profile.moon_nakshatra_index || !currentNadi) return true;
       
       const candidateNadi = NAKSHATRA_TO_NADI[profile.moon_nakshatra_index];
       const candidatePada = getPadaFromChart(profile.vedic_chart);
       
-      // If same Nadi but different Pada, it's acceptable (Nadi Dosha cancelled)
-      if (candidateNadi === currentNadi) {
-        // Same Nadi AND same Pada = Nadi Dosha = Remove
-        if (candidatePada === currentPada) {
-          return false;
-        }
-        // Same Nadi but different Pada = OK (exception)
-        return true;
+      if (candidateNadi === currentNadi && candidatePada === currentPada) {
+        return false;
       }
       
       return true;
     });
 
-    // FILTER 2: Manglik Safety - Categorize profiles
+    // FILTER 2 & Soulmate Detection
     type ProfileWithPriority = Profile & { manglikPriority: number; isSoulmate: boolean };
     
     const profilesWithPriority: ProfileWithPriority[] = filteredProfiles.map((profile: Profile) => {
       const candidateIsManglik = profile.is_manglik && !profile.manglik_cancelled;
-      let manglikPriority = 1; // Default: normal priority
+      let manglikPriority = 1;
       
       if (currentIsManglik) {
-        // Current user is Manglik - prioritize other Mangliks
         if (candidateIsManglik) {
-          manglikPriority = 0; // High priority (show first)
+          manglikPriority = 0;
         } else {
-          manglikPriority = 2; // Lower priority
+          manglikPriority = 2;
         }
       } else {
-        // Current user is Non-Manglik - deprioritize active Mangliks
         if (candidateIsManglik) {
-          manglikPriority = 2; // Lower priority
+          manglikPriority = 2;
         } else {
-          manglikPriority = 0; // High priority (non-manglik with non-manglik)
+          manglikPriority = 0;
         }
       }
       
-      // Check for Soulmate connection (AK-DK match)
       const isSoulmate = 
         currentAtmakaraka && 
         profile.darakaraka_planet && 
@@ -188,7 +162,6 @@ serve(async (req) => {
       };
     });
 
-    // Sort by manglik priority (soulmates will be boosted on client-side after Guna Milan)
     profilesWithPriority.sort((a, b) => a.manglikPriority - b.manglikPriority);
 
     return new Response(

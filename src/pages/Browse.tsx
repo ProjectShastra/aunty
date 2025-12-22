@@ -79,11 +79,12 @@ export default function Browse() {
     }
   }, [user, navigate]);
 
-  // Fallback direct query if edge function fails
+  // Fallback using secure RPC function
   const fetchMatchesFallback = async () => {
     if (!user) return;
 
     try {
+      // Get own profile first (allowed by RLS)
       const { data: myProfileData } = await supabase
         .from('profiles')
         .select('*')
@@ -107,11 +108,13 @@ export default function Browse() {
 
       setMyProfile(currentUserProfile);
 
+      // Use secure RPC function for discovery
       const { data: otherProfiles, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .neq('user_id', user.id)
-        .eq('onboarding_complete', true);
+        .rpc('get_discovery_profiles', {
+          p_user_id: user.id,
+          p_looking_for: myProfileData.looking_for,
+          p_limit: 50
+        });
 
       if (error) throw error;
 

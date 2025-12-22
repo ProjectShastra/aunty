@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      matches: {
+        Row: {
+          created_at: string
+          id: string
+          is_mutual: boolean | null
+          updated_at: string
+          user1_id: string
+          user1_liked: boolean | null
+          user2_id: string
+          user2_liked: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_mutual?: boolean | null
+          updated_at?: string
+          user1_id: string
+          user1_liked?: boolean | null
+          user2_id: string
+          user2_liked?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_mutual?: boolean | null
+          updated_at?: string
+          user1_id?: string
+          user1_liked?: boolean | null
+          user2_id?: string
+          user2_liked?: boolean | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age_range_max: number | null
@@ -115,7 +148,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_discovery_profiles: {
+        Args: { p_limit?: number; p_looking_for?: string; p_user_id: string }
+        Returns: {
+          ascendant_sign_index: number
+          atmakaraka_planet: string
+          bio: string
+          birth_location: string
+          darakaraka_planet: string
+          date_of_birth: string
+          element: string
+          gender: string
+          id: string
+          is_manglik: boolean
+          looking_for: string
+          manglik_cancelled: boolean
+          moon_nakshatra_index: number
+          moon_sign_index: number
+          name: string
+          photo_1: string
+          photo_2: string
+          user_id: string
+          vedic_chart: Json
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
