@@ -52,6 +52,13 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				aunty: {
+					coral: 'hsl(var(--aunty-coral))',
+					purple: 'hsl(var(--aunty-purple))',
+					cream: 'hsl(var(--aunty-cream))',
+					gold: 'hsl(var(--aunty-gold))',
+					success: 'hsl(var(--aunty-success))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
