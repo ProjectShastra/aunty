@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          age_range_max: number | null
+          age_range_min: number | null
+          ascendant_sign_index: number | null
+          atmakaraka_planet: string | null
+          bio: string | null
+          birth_latitude: number
+          birth_location: string
+          birth_longitude: number
+          birth_time: string
+          birth_timezone: number
+          created_at: string
+          darakaraka_planet: string | null
+          date_of_birth: string
+          element: string | null
+          gender: string | null
+          id: string
+          is_manglik: boolean | null
+          location_preference: string | null
+          looking_for: string | null
+          manglik_cancelled: boolean | null
+          moon_nakshatra_index: number | null
+          moon_sign_index: number | null
+          name: string
+          onboarding_complete: boolean | null
+          photo_1: string | null
+          photo_2: string | null
+          updated_at: string
+          user_id: string
+          vedic_chart: Json | null
+        }
+        Insert: {
+          age_range_max?: number | null
+          age_range_min?: number | null
+          ascendant_sign_index?: number | null
+          atmakaraka_planet?: string | null
+          bio?: string | null
+          birth_latitude: number
+          birth_location: string
+          birth_longitude: number
+          birth_time: string
+          birth_timezone?: number
+          created_at?: string
+          darakaraka_planet?: string | null
+          date_of_birth: string
+          element?: string | null
+          gender?: string | null
+          id?: string
+          is_manglik?: boolean | null
+          location_preference?: string | null
+          looking_for?: string | null
+          manglik_cancelled?: boolean | null
+          moon_nakshatra_index?: number | null
+          moon_sign_index?: number | null
+          name: string
+          onboarding_complete?: boolean | null
+          photo_1?: string | null
+          photo_2?: string | null
+          updated_at?: string
+          user_id: string
+          vedic_chart?: Json | null
+        }
+        Update: {
+          age_range_max?: number | null
+          age_range_min?: number | null
+          ascendant_sign_index?: number | null
+          atmakaraka_planet?: string | null
+          bio?: string | null
+          birth_latitude?: number
+          birth_location?: string
+          birth_longitude?: number
+          birth_time?: string
+          birth_timezone?: number
+          created_at?: string
+          darakaraka_planet?: string | null
+          date_of_birth?: string
+          element?: string | null
+          gender?: string | null
+          id?: string
+          is_manglik?: boolean | null
+          location_preference?: string | null
+          looking_for?: string | null
+          manglik_cancelled?: boolean | null
+          moon_nakshatra_index?: number | null
+          moon_sign_index?: number | null
+          name?: string
+          onboarding_complete?: boolean | null
+          photo_1?: string | null
+          photo_2?: string | null
+          updated_at?: string
+          user_id?: string
+          vedic_chart?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
