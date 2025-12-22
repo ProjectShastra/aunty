@@ -154,3 +154,22 @@ export function calculateProfile(
 export * from './types';
 export * from './utils';
 export { calculateJaiminiKarakas, analyzeDarakaraka } from './jaimini-karakas';
+
+// Matching Engine exports
+export { 
+  evaluateMatch,
+  calculateGunaMilan,
+  evaluateManglikCompatibility,
+  checkManglik,
+  calculateSoulmateBonus
+} from './matching';
+
+export type {
+  MatchResult,
+  MatchScoreBreakdown,
+  GunaMilanResult,
+  GunaScoreBreakdown,
+  ManglikMatchResult,
+  ManglikStatus,
+  SoulmateResult
+} from './matching';
