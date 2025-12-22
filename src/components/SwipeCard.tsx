@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { motion, useMotionValue, useTransform, AnimatePresence, PanInfo } from 'framer-motion';
-import { MapPin, Heart, X, RotateCcw } from 'lucide-react';
+import { MapPin, Heart, X, RotateCcw, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { MatchedProfile } from '@/lib/matching-utils';
+import { MatchedProfile, MatchTier } from '@/lib/matching-utils';
 import { getVibeTag, generateAuntysTea } from '@/lib/auntys-tea';
 import { ZODIAC_SIGNS, NAKSHATRAS } from '@/lib/vedic-astrology/types';
 
@@ -38,15 +38,35 @@ export function SwipeCard({ profile, onSwipe, currentUserManglik }: SwipeCardPro
 
   const age = calculateAge(profile.date_of_birth);
   const city = profile.birth_location?.split(',')[0] || 'Unknown';
-  const vibeTag = getVibeTag(profile.gunaScore, profile.isSoulmate);
+  const vibeTag = getVibeTag(
+    profile.gunaScore, 
+    profile.isSoulmate, 
+    profile.hasNadiDosha,
+    profile.matchTier
+  );
   
   const candidateManglik = profile.is_manglik && !profile.manglik_cancelled;
   const auntysTea = generateAuntysTea(
     profile.gunaBreakdown,
     profile.isSoulmate,
     currentUserManglik,
-    candidateManglik || false
+    candidateManglik || false,
+    profile.hasNadiDosha
   );
+
+  // Determine card border styling based on tier
+  const getCardBorderStyle = () => {
+    if (profile.hasNadiDosha) {
+      return 'ring-2 ring-red-400/50';
+    }
+    if (profile.isSoulmate) {
+      return 'ring-2 ring-purple-400/50';
+    }
+    if (profile.matchTier === 'twinFlame') {
+      return 'ring-2 ring-amber-400/50';
+    }
+    return '';
+  };
 
   const moonSign = profile.moon_sign_index 
     ? ZODIAC_SIGNS[profile.moon_sign_index as keyof typeof ZODIAC_SIGNS] 
@@ -110,6 +130,7 @@ export function SwipeCard({ profile, onSwipe, currentUserManglik }: SwipeCardPro
             <div 
               className={cn(
                 "absolute inset-0 rounded-3xl overflow-hidden shadow-2xl",
+                getCardBorderStyle(),
                 isFlipped && "pointer-events-none"
               )}
               style={{ backfaceVisibility: 'hidden' }}
@@ -273,8 +294,18 @@ export function SwipeCard({ profile, onSwipe, currentUserManglik }: SwipeCardPro
                     </div>
                   )}
 
+                  {/* Nadi Dosha Warning */}
+                  {profile.hasNadiDosha && (
+                    <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3 text-center">
+                      <span className="text-red-200 text-sm flex items-center justify-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        Karmic Challenge - Traditional astrology advises caution
+                      </span>
+                    </div>
+                  )}
+
                   {/* Manglik Warning */}
-                  {candidateManglik && (
+                  {candidateManglik && !profile.hasNadiDosha && (
                     <div className="bg-amber-500/20 border border-amber-500/30 rounded-xl p-3 text-center">
                       <span className="text-amber-200 text-sm">♂️ Manglik - Aunty recommends matching</span>
                     </div>

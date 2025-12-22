@@ -1,10 +1,14 @@
 /**
  * Client-side matching utilities for the Discovery Feed
  * Handles Guna Milan scoring and profile sorting
+ * 
+ * Strategy: "Sort, Don't Filter" - show all profiles but rank them
  */
 
 import { VedicProfile, ZodiacSign, NakshatraIndex } from '@/lib/vedic-astrology/types';
 import { calculateGunaMilan, GunaMilanResult } from '@/lib/vedic-astrology/matching';
+
+export type MatchTier = 'soulmate' | 'twinFlame' | 'auntyApproves' | 'itsAVibe' | 'spicy' | 'karmic';
 
 export interface MatchedProfile {
   id: string;
@@ -28,9 +32,10 @@ export interface MatchedProfile {
   // Computed matching fields
   manglikPriority: number;
   isSoulmate: boolean;
+  hasNadiDosha?: boolean;
   gunaScore?: number;
   gunaBreakdown?: GunaMilanResult;
-  matchTier?: 'excellent' | 'good' | 'average';
+  matchTier?: MatchTier;
 }
 
 export interface CurrentUserProfile {
@@ -73,12 +78,72 @@ export function calculateGunaScore(
 }
 
 /**
- * Sort profiles by match quality
- * Priority order:
- * 1. Soulmate connections (AK-DK match) - force to top with ✨
- * 2. Excellent matches (30+ Guna points)
- * 3. Good matches (18-29 Guna points)
- * 4. Average matches (below 18)
+ * Determine match tier based on score and special conditions
+ * 
+ * Tiers (in display order):
+ * 1. Soulmate - AK-DK match (cosmic destiny)
+ * 2. Twin Flame - Score 25+ (excellent match)
+ * 3. Aunty Approves - Score 18-24 (good match)
+ * 4. It's a Vibe - Score 15-17 (decent potential)
+ * 5. Spicy/Tricky - Score < 15 (challenging)
+ * 6. Karmic Lesson - Nadi Dosha (use caution)
+ */
+function determineMatchTier(
+  gunaScore: number | undefined,
+  isSoulmate: boolean,
+  hasNadiDosha: boolean
+): MatchTier {
+  // Nadi Dosha is a serious concern - label it
+  if (hasNadiDosha) {
+    return 'karmic';
+  }
+  
+  // Soulmate takes priority
+  if (isSoulmate) {
+    return 'soulmate';
+  }
+  
+  // Score-based tiers
+  const score = gunaScore ?? 0;
+  
+  if (score >= 25) {
+    return 'twinFlame';
+  }
+  if (score >= 18) {
+    return 'auntyApproves';
+  }
+  if (score >= 15) {
+    return 'itsAVibe';
+  }
+  
+  return 'spicy';
+}
+
+/**
+ * Get sort priority for match tier (lower = higher priority)
+ */
+function getTierPriority(tier: MatchTier): number {
+  const priorities: Record<MatchTier, number> = {
+    soulmate: 0,
+    twinFlame: 1,
+    auntyApproves: 2,
+    itsAVibe: 3,
+    spicy: 4,
+    karmic: 5, // Pushed to bottom
+  };
+  return priorities[tier];
+}
+
+/**
+ * Sort profiles by match quality - "The Judgmental Feed"
+ * 
+ * Sorting order:
+ * 1. Soulmates (AK-DK match) - force to top with ✨
+ * 2. Twin Flames (Score 25+) - gold tier
+ * 3. Aunty Approves (Score 18-24) - green tier
+ * 4. It's a Vibe (Score 15-17) - blue tier
+ * 5. Spicy/Tricky (Score < 15) - orange tier
+ * 6. Karmic Lessons (Nadi Dosha) - red tier, bottom
  * 
  * Within each tier, sort by Guna score descending
  */
@@ -86,18 +151,9 @@ export function sortProfilesByMatch(
   profiles: MatchedProfile[],
   currentProfile: CurrentUserProfile
 ): MatchedProfile[] {
-  // Calculate Guna scores for all profiles
+  // Calculate Guna scores and assign tiers for all profiles
   const profilesWithScores = profiles.map(profile => {
     const gunaResult = calculateGunaScore(currentProfile, profile);
-    
-    let matchTier: 'excellent' | 'good' | 'average' = 'average';
-    if (gunaResult) {
-      if (gunaResult.score >= 30) {
-        matchTier = 'excellent';
-      } else if (gunaResult.score >= 18) {
-        matchTier = 'good';
-      }
-    }
 
     // Check for soulmate connection (current user's AK = candidate's DK)
     const isSoulmate = 
@@ -111,25 +167,33 @@ export function sortProfilesByMatch(
       profile.atmakaraka_planet && 
       currentProfile.darakaraka_planet === profile.atmakaraka_planet;
 
+    const finalIsSoulmate = isSoulmate || isReverseSoulmate || profile.isSoulmate;
+    const gunaScore = gunaResult?.score ?? 0;
+    
+    const matchTier = determineMatchTier(
+      gunaScore,
+      finalIsSoulmate,
+      profile.hasNadiDosha || false
+    );
+
     return {
       ...profile,
-      gunaScore: gunaResult?.score ?? 0,
+      gunaScore,
       gunaBreakdown: gunaResult?.breakdown,
       matchTier,
-      isSoulmate: isSoulmate || isReverseSoulmate || profile.isSoulmate,
+      isSoulmate: finalIsSoulmate,
     };
   });
 
-  // Sort profiles
+  // Sort profiles by tier priority, then by score within tier
   profilesWithScores.sort((a, b) => {
-    // Soulmates always first
-    if (a.isSoulmate && !b.isSoulmate) return -1;
-    if (!a.isSoulmate && b.isSoulmate) return 1;
-
-    // Then by match tier
-    const tierOrder = { excellent: 0, good: 1, average: 2 };
-    const tierDiff = tierOrder[a.matchTier || 'average'] - tierOrder[b.matchTier || 'average'];
-    if (tierDiff !== 0) return tierDiff;
+    const tierA = getTierPriority(a.matchTier || 'spicy');
+    const tierB = getTierPriority(b.matchTier || 'spicy');
+    
+    // First sort by tier
+    if (tierA !== tierB) {
+      return tierA - tierB;
+    }
 
     // Within same tier, sort by Guna score (higher first)
     return (b.gunaScore || 0) - (a.gunaScore || 0);
@@ -160,8 +224,10 @@ export function getMatchBadges(profile: MatchedProfile): string[] {
     }
   }
 
-  // Element compatibility (simplified)
-  // This could be expanded based on element matching rules
+  // Warning badges
+  if (profile.hasNadiDosha) {
+    badges.push('⚠️ Karmic Challenge');
+  }
 
   return badges;
 }
@@ -170,22 +236,29 @@ export function getMatchBadges(profile: MatchedProfile): string[] {
  * Get compatibility color based on Guna score
  */
 export function getScoreColor(score: number): string {
-  if (score >= 30) return 'text-green-600';
-  if (score >= 25) return 'text-emerald-500';
-  if (score >= 18) return 'text-yellow-600';
-  return 'text-orange-500';
+  if (score >= 25) return 'text-green-600';
+  if (score >= 18) return 'text-emerald-500';
+  if (score >= 15) return 'text-blue-500';
+  if (score >= 10) return 'text-orange-500';
+  return 'text-red-500';
 }
 
 /**
  * Get match tier label
  */
-export function getMatchTierLabel(tier: 'excellent' | 'good' | 'average'): string {
+export function getMatchTierLabel(tier: MatchTier): string {
   switch (tier) {
-    case 'excellent':
-      return 'Highly Compatible';
-    case 'good':
-      return 'Compatible';
-    case 'average':
-      return 'May Need Work';
+    case 'soulmate':
+      return 'Cosmic Destiny';
+    case 'twinFlame':
+      return 'Twin Flame';
+    case 'auntyApproves':
+      return 'Aunty Approves';
+    case 'itsAVibe':
+      return 'Potential Match';
+    case 'spicy':
+      return 'Challenging';
+    case 'karmic':
+      return 'Use Caution';
   }
 }
