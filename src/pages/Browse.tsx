@@ -1,39 +1,18 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, X, Star, MapPin, Sparkles, RefreshCw, Info } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Sparkles, RefreshCw, Heart, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { ZODIAC_SIGNS, NAKSHATRAS } from '@/lib/vedic-astrology/types';
+import { SwipeCard, SwipeButtons } from '@/components/SwipeCard';
 import { 
   MatchedProfile, 
   CurrentUserProfile, 
-  sortProfilesByMatch, 
-  getMatchBadges,
-  getScoreColor 
+  sortProfilesByMatch 
 } from '@/lib/matching-utils';
-
-function calculateAge(dateOfBirth: string): number {
-  const today = new Date();
-  const birthDate = new Date(dateOfBirth);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDiff = today.getMonth() - birthDate.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-  return age;
-}
 
 export default function Browse() {
   const navigate = useNavigate();
@@ -43,8 +22,7 @@ export default function Browse() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [myProfile, setMyProfile] = useState<CurrentUserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [direction, setDirection] = useState<'left' | 'right' | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
+  const [swipeHistory, setSwipeHistory] = useState<number[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -64,7 +42,7 @@ export default function Browse() {
         return;
       }
 
-      // Call edge function for server-side filtering
+      // Try edge function first
       const { data, error } = await supabase.functions.invoke('fetch-matches', {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -73,7 +51,6 @@ export default function Browse() {
 
       if (error) {
         console.error('Edge function error:', error);
-        // Fallback to direct query if edge function fails
         await fetchMatchesFallback();
         return;
       }
@@ -93,6 +70,7 @@ export default function Browse() {
 
       setProfiles(sortedProfiles);
       setCurrentIndex(0);
+      setSwipeHistory([]);
     } catch (error) {
       console.error('Error fetching matches:', error);
       toast.error('Failed to load matches');
@@ -101,12 +79,11 @@ export default function Browse() {
     }
   }, [user, navigate]);
 
-  // Fallback direct query if edge function is not deployed
+  // Fallback direct query if edge function fails
   const fetchMatchesFallback = async () => {
     if (!user) return;
 
     try {
-      // Fetch my profile first
       const { data: myProfileData } = await supabase
         .from('profiles')
         .select('*')
@@ -130,7 +107,6 @@ export default function Browse() {
 
       setMyProfile(currentUserProfile);
 
-      // Fetch other profiles
       const { data: otherProfiles, error } = await supabase
         .from('profiles')
         .select('*')
@@ -139,14 +115,12 @@ export default function Browse() {
 
       if (error) throw error;
 
-      // Convert to MatchedProfile format
       const matchedProfiles: MatchedProfile[] = (otherProfiles || []).map((p: any) => ({
         ...p,
         manglikPriority: 1,
         isSoulmate: false,
       }));
 
-      // Sort profiles client-side
       const sortedProfiles = sortProfilesByMatch(matchedProfiles, currentUserProfile);
       setProfiles(sortedProfiles);
     } catch (error) {
@@ -161,308 +135,167 @@ export default function Browse() {
     }
   }, [user, fetchMatches]);
 
-  const handleSwipe = (action: 'like' | 'pass') => {
-    setDirection(action === 'like' ? 'right' : 'left');
+  const handleSwipe = (direction: 'left' | 'right') => {
+    const currentProfile = profiles[currentIndex];
     
-    setTimeout(() => {
-      if (action === 'like') {
-        const profile = profiles[currentIndex];
-        if (profile?.isSoulmate) {
-          toast.success('✨ Aunty sees a cosmic connection here!');
-        } else {
-          toast.success('Aunty noted your interest! 💕');
-        }
-      }
-      
-      setDirection(null);
-      if (currentIndex < profiles.length - 1) {
-        setCurrentIndex(prev => prev + 1);
+    if (direction === 'right') {
+      if (currentProfile?.isSoulmate) {
+        toast.success('✨ Aunty sees a cosmic connection here!', {
+          description: 'Interest sent to your destined match!',
+        });
       } else {
-        toast.info("That's everyone for now! Check back later.");
+        toast.success('Interest sent! 💕', {
+          description: `Aunty will let ${currentProfile?.name} know!`,
+        });
       }
-    }, 300);
+    }
+
+    setSwipeHistory(prev => [...prev, currentIndex]);
+    
+    if (currentIndex < profiles.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+    }
+  };
+
+  const handleUndo = () => {
+    if (swipeHistory.length > 0) {
+      const lastIndex = swipeHistory[swipeHistory.length - 1];
+      setSwipeHistory(prev => prev.slice(0, -1));
+      setCurrentIndex(lastIndex);
+      toast.info('Brought back the last profile');
+    }
   };
 
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <Sparkles className="h-8 w-8 text-primary mx-auto animate-pulse" />
-          <p className="text-muted-foreground">Finding your cosmic matches...</p>
-        </div>
+        <motion.div 
+          className="text-center space-y-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+          >
+            <Sparkles className="h-12 w-12 text-primary mx-auto" />
+          </motion.div>
+          <p className="text-muted-foreground text-lg">Finding your cosmic matches...</p>
+          <p className="text-muted-foreground/60 text-sm">Aunty is consulting the stars</p>
+        </motion.div>
       </div>
     );
   }
 
   const currentProfile = profiles[currentIndex];
+  const hasMoreProfiles = currentIndex < profiles.length - 1;
 
   if (!currentProfile) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-8">
-        <div className="text-center space-y-4 max-w-md">
-          <Heart className="h-16 w-16 text-muted-foreground mx-auto" />
-          <h2 className="text-2xl font-semibold text-foreground">No More Profiles</h2>
+        <motion.div 
+          className="text-center space-y-6 max-w-md"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <div className="relative">
+            <Heart className="h-20 w-20 text-muted-foreground/30 mx-auto" />
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center"
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Sparkles className="h-8 w-8 text-primary" />
+            </motion.div>
+          </div>
+          
+          <h2 className="text-2xl font-bold text-foreground">You've Seen Everyone!</h2>
           <p className="text-muted-foreground">
-            Aunty is searching the cosmos for more matches. Check back soon!
+            Aunty is searching the cosmos for more matches. 
+            Check back soon or expand your preferences!
           </p>
-          <div className="flex gap-3 justify-center">
-            <Button onClick={() => fetchMatches()} variant="outline">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
+          
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+            <Button onClick={() => fetchMatches()} variant="outline" className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Refresh Matches
             </Button>
-            <Button onClick={() => navigate('/')}>
-              Go Home
+            <Button onClick={() => navigate('/')} className="gap-2">
+              <Settings className="h-4 w-4" />
+              Preferences
             </Button>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
-  const age = calculateAge(currentProfile.date_of_birth);
-  const moonSign = currentProfile.moon_sign_index ? ZODIAC_SIGNS[currentProfile.moon_sign_index as keyof typeof ZODIAC_SIGNS] : null;
-  const nakshatra = currentProfile.moon_nakshatra_index ? NAKSHATRAS[currentProfile.moon_nakshatra_index - 1] : null;
-  const badges = getMatchBadges(currentProfile);
-  const scoreColor = currentProfile.gunaScore ? getScoreColor(currentProfile.gunaScore) : '';
-
   return (
-    <div className="min-h-screen bg-background py-6 px-4">
-      <div className="max-w-md mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30 pt-4 pb-24">
+      <div className="container max-w-lg mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-4">
-          <h1 className="text-2xl font-bold text-secondary flex items-center justify-center gap-2">
-            <Heart className="h-6 w-6 text-primary" />
+        <motion.div 
+          className="text-center mb-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-pink-500 to-secondary bg-clip-text text-transparent">
             Aunty's Picks
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {profiles.length - currentIndex} cosmic connections remaining
+          <p className="text-muted-foreground text-sm mt-1">
+            {profiles.length - currentIndex} cosmic connections waiting
           </p>
+        </motion.div>
+
+        {/* Card Stack */}
+        <div className="relative min-h-[500px]">
+          {/* Background cards for stack effect */}
+          {hasMoreProfiles && profiles[currentIndex + 1] && (
+            <motion.div
+              className="absolute inset-0 rounded-3xl bg-card shadow-lg"
+              style={{ 
+                transform: 'scale(0.95) translateY(10px)',
+                opacity: 0.5,
+                zIndex: 0
+              }}
+            />
+          )}
+
+          {/* Main Card */}
+          <div className="relative z-10">
+            <SwipeCard
+              key={currentProfile.id}
+              profile={currentProfile}
+              onSwipe={handleSwipe}
+              currentUserManglik={myProfile?.is_manglik || false}
+            />
+          </div>
         </div>
-
-        {/* Profile Card */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentProfile.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              x: direction === 'left' ? -300 : direction === 'right' ? 300 : 0,
-              rotate: direction === 'left' ? -15 : direction === 'right' ? 15 : 0,
-            }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-card rounded-2xl shadow-xl overflow-hidden border border-border"
-          >
-            {/* Photo */}
-            <div className="relative aspect-[3/4] bg-muted">
-              {currentProfile.photo_1 ? (
-                <img
-                  src={currentProfile.photo_1}
-                  alt={currentProfile.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Heart className="h-16 w-16 text-muted-foreground" />
-                </div>
-              )}
-
-              {/* Soulmate indicator */}
-              {currentProfile.isSoulmate && (
-                <div className="absolute top-4 left-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 shadow-lg animate-pulse">
-                  <Sparkles className="h-4 w-4" />
-                  <span className="font-semibold text-sm">Soulmate Match</span>
-                </div>
-              )}
-
-              {/* Match Score */}
-              {currentProfile.gunaScore !== undefined && currentProfile.gunaScore > 0 && (
-                <button
-                  onClick={() => setShowDetails(true)}
-                  className="absolute top-4 right-4 bg-background/90 backdrop-blur-sm rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg hover:bg-background transition-colors"
-                >
-                  <Star className="h-4 w-4 text-aunty-gold fill-aunty-gold" />
-                  <span className={`font-semibold ${scoreColor}`}>
-                    {currentProfile.gunaScore.toFixed(0)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">/36</span>
-                  <Info className="h-3 w-3 text-muted-foreground ml-1" />
-                </button>
-              )}
-
-              {/* Gradient Overlay */}
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background via-background/80 to-transparent" />
-
-              {/* Profile Info Overlay */}
-              <div className="absolute inset-x-0 bottom-0 p-4 space-y-2">
-                <div className="flex items-baseline gap-2">
-                  <h2 className="text-2xl font-bold text-foreground">{currentProfile.name}</h2>
-                  <span className="text-lg text-muted-foreground">{age}</span>
-                </div>
-
-                {currentProfile.birth_location && (
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    <span>{currentProfile.birth_location}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Details */}
-            <div className="p-4 space-y-4">
-              {/* Match Badges */}
-              {badges.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {badges.map((badge, index) => (
-                    <Badge 
-                      key={index} 
-                      variant="secondary" 
-                      className={
-                        badge.includes('Soulmate') 
-                          ? 'bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 border-purple-200' 
-                          : badge.includes('Excellent')
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-accent text-accent-foreground'
-                      }
-                    >
-                      {badge}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-
-              {/* Guna Score Progress */}
-              {currentProfile.gunaScore !== undefined && currentProfile.gunaScore > 0 && (
-                <div className="space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Compatibility Score</span>
-                    <span className={`font-medium ${scoreColor}`}>
-                      {Math.round((currentProfile.gunaScore / 36) * 100)}%
-                    </span>
-                  </div>
-                  <Progress 
-                    value={(currentProfile.gunaScore / 36) * 100} 
-                    className="h-2"
-                  />
-                </div>
-              )}
-
-              {/* Astrological Badges */}
-              <div className="flex flex-wrap gap-2">
-                {moonSign && (
-                  <Badge variant="outline" className="bg-secondary/5 text-secondary border-secondary/20">
-                    🌙 {moonSign}
-                  </Badge>
-                )}
-                {nakshatra && (
-                  <Badge variant="outline" className="bg-accent/50 text-accent-foreground border-accent">
-                    ⭐ {nakshatra}
-                  </Badge>
-                )}
-                {currentProfile.element && (
-                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">
-                    {currentProfile.element === 'Fire' && '🔥'}
-                    {currentProfile.element === 'Water' && '💧'}
-                    {currentProfile.element === 'Air' && '💨'}
-                    {currentProfile.element === 'Earth' && '🌍'}
-                    {currentProfile.element}
-                  </Badge>
-                )}
-                {currentProfile.is_manglik && !currentProfile.manglik_cancelled && (
-                  <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
-                    ♂️ Manglik
-                  </Badge>
-                )}
-              </div>
-
-              {/* Bio */}
-              {currentProfile.bio && (
-                <p className="text-muted-foreground text-sm line-clamp-3">
-                  {currentProfile.bio}
-                </p>
-              )}
-            </div>
-          </motion.div>
-        </AnimatePresence>
 
         {/* Action Buttons */}
-        <div className="flex justify-center gap-6 mt-6">
-          <Button
-            size="lg"
-            variant="outline"
-            className="w-16 h-16 rounded-full border-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-            onClick={() => handleSwipe('pass')}
-          >
-            <X className="h-8 w-8" />
-          </Button>
+        <SwipeButtons
+          onSwipeLeft={() => handleSwipe('left')}
+          onSwipeRight={() => handleSwipe('right')}
+          onUndo={handleUndo}
+          canUndo={swipeHistory.length > 0}
+        />
 
-          <Button
-            size="lg"
-            className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90"
-            onClick={() => handleSwipe('like')}
-          >
-            <Heart className="h-8 w-8" />
-          </Button>
+        {/* Progress indicator */}
+        <div className="flex justify-center gap-1 mt-2">
+          {profiles.slice(0, Math.min(10, profiles.length)).map((_, idx) => (
+            <motion.div
+              key={idx}
+              className={`h-1 rounded-full transition-all duration-300 ${
+                idx === currentIndex 
+                  ? 'w-6 bg-primary' 
+                  : idx < currentIndex 
+                    ? 'w-2 bg-primary/30' 
+                    : 'w-2 bg-muted-foreground/20'
+              }`}
+            />
+          ))}
         </div>
-
-        {/* Counter */}
-        <p className="text-center text-xs text-muted-foreground mt-4">
-          Profile {currentIndex + 1} of {profiles.length}
-        </p>
       </div>
-
-      {/* Guna Details Dialog */}
-      <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-aunty-gold fill-aunty-gold" />
-              Compatibility Breakdown
-            </DialogTitle>
-          </DialogHeader>
-          
-          {currentProfile.gunaBreakdown && (
-            <div className="space-y-3">
-              {Object.entries(currentProfile.gunaBreakdown.breakdown).map(([key, value]) => {
-                const maxScores: Record<string, number> = {
-                  varna: 1, vashya: 2, tara: 3, yoni: 4,
-                  maitri: 5, gana: 6, bhakoot: 7, nadi: 8
-                };
-                const max = maxScores[key] || 1;
-                const numValue = typeof value === 'number' ? value : 0;
-                const percentage = (numValue / max) * 100;
-                
-                return (
-                  <div key={key} className="space-y-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="capitalize text-foreground">{key}</span>
-                      <span className="text-muted-foreground">{numValue}/{max}</span>
-                    </div>
-                    <Progress value={percentage} className="h-1.5" />
-                  </div>
-                );
-              })}
-              
-              <div className="pt-3 border-t border-border">
-                <div className="flex justify-between font-semibold">
-                  <span>Total Score</span>
-                  <span className={scoreColor}>
-                    {currentProfile.gunaScore}/36
-                  </span>
-                </div>
-              </div>
-
-              {currentProfile.gunaBreakdown.nadiDosha && (
-                <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg">
-                  ⚠️ Nadi Dosha detected - Consider consulting an astrologer
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
