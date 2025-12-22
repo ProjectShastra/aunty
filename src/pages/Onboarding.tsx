@@ -135,9 +135,9 @@ export default function Onboarding() {
       // Calculate element from moon sign
       const element = getElementFromMoonSign(vedicProfile.moon.sign);
 
-      // Check manglik cancellation
+      // Check manglik cancellation - mild severity = effectively cancelled
       const isManglik = vedicProfile.doshas.isManglik;
-      const manglikCancelled = isManglik && vedicProfile.doshas.manglikSeverity === 'low';
+      const manglikCancelled = isManglik && vedicProfile.doshas.manglikSeverity === 'mild';
 
       // Prepare profile data
       const profileData = {
@@ -154,23 +154,23 @@ export default function Onboarding() {
         birth_timezone: birthLocation.timezone,
         photo_1: photo1Url,
         photo_2: photo2Url,
-        // Astrological Keys
+        // Astrological Keys - karakas are already PlanetId strings
         moon_nakshatra_index: vedicProfile.moon.nakshatra,
         moon_sign_index: vedicProfile.moon.sign,
         ascendant_sign_index: vedicProfile.lagna.sign,
         is_manglik: isManglik,
         manglik_cancelled: manglikCancelled,
-        atmakaraka_planet: vedicProfile.karakas.atmakaraka.planet,
-        darakaraka_planet: vedicProfile.karakas.darakaraka.planet,
+        atmakaraka_planet: vedicProfile.karakas.atmakaraka,
+        darakaraka_planet: vedicProfile.karakas.darakaraka,
         element: element,
-        vedic_chart: vedicProfile as unknown as Record<string, unknown>,
+        vedic_chart: JSON.parse(JSON.stringify(vedicProfile)),
         onboarding_complete: true,
       };
 
-      // Insert profile
+      // Insert profile (wrap in array for Supabase insert)
       const { error } = await supabase
         .from('profiles')
-        .insert(profileData);
+        .insert([profileData]);
 
       if (error) {
         console.error('Profile insert error:', error);
