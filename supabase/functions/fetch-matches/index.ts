@@ -93,12 +93,12 @@ serve(async (req) => {
       );
     }
 
-    // Use the secure discovery function to get profiles
+    // Use the secure discovery function to get ALL profiles (no filtering, just sorting)
     const { data: discoveryProfiles, error: discoveryError } = await adminClient
       .rpc('get_discovery_profiles', {
         p_user_id: user.id,
         p_looking_for: currentProfile.looking_for,
-        p_limit: 50
+        p_limit: 100 // Increased limit to show more profiles
       });
 
     if (discoveryError) {
@@ -109,64 +109,73 @@ serve(async (req) => {
       );
     }
 
+    console.log(`Found ${(discoveryProfiles || []).length} discovery profiles`);
+
     const currentNakshatra = currentProfile.moon_nakshatra_index;
     const currentNadi = currentNakshatra ? NAKSHATRA_TO_NADI[currentNakshatra] : null;
     const currentPada = getPadaFromChart(currentProfile.vedic_chart);
     const currentIsManglik = currentProfile.is_manglik && !currentProfile.manglik_cancelled;
     const currentAtmakaraka = currentProfile.atmakaraka_planet;
 
-    // FILTER 1: Remove Nadi Dosha matches (same Nadi, same Pada)
-    let filteredProfiles = (discoveryProfiles || []).filter((profile: Profile) => {
-      if (!profile.moon_nakshatra_index || !currentNadi) return true;
-      
-      const candidateNadi = NAKSHATRA_TO_NADI[profile.moon_nakshatra_index];
-      const candidatePada = getPadaFromChart(profile.vedic_chart);
-      
-      if (candidateNadi === currentNadi && candidatePada === currentPada) {
-        return false;
-      }
-      
-      return true;
-    });
-
-    // FILTER 2 & Soulmate Detection
-    type ProfileWithPriority = Profile & { manglikPriority: number; isSoulmate: boolean };
+    // NO FILTERING - "Sort, Don't Filter" strategy
+    // Instead, we tag each profile with metadata for client-side sorting
+    type ProfileWithMetadata = Profile & { 
+      manglikPriority: number; 
+      isSoulmate: boolean;
+      hasNadiDosha: boolean;
+    };
     
-    const profilesWithPriority: ProfileWithPriority[] = filteredProfiles.map((profile: Profile) => {
-      const candidateIsManglik = profile.is_manglik && !profile.manglik_cancelled;
+    const profilesWithMetadata: ProfileWithMetadata[] = (discoveryProfiles || []).map((profile: Profile) => {
+      const candidateManglik = profile.is_manglik && !profile.manglik_cancelled;
       let manglikPriority = 1;
       
+      // Manglik priority scoring
       if (currentIsManglik) {
-        if (candidateIsManglik) {
-          manglikPriority = 0;
+        if (candidateManglik) {
+          manglikPriority = 0; // Best for Manglik users
         } else {
-          manglikPriority = 2;
+          manglikPriority = 2; // Less ideal
         }
       } else {
-        if (candidateIsManglik) {
-          manglikPriority = 2;
+        if (candidateManglik) {
+          manglikPriority = 2; // Less ideal for non-Manglik
         } else {
-          manglikPriority = 0;
+          manglikPriority = 0; // Best for non-Manglik
         }
       }
       
+      // Soulmate detection (AK-DK match)
       const isSoulmate = 
         currentAtmakaraka && 
         profile.darakaraka_planet && 
         currentAtmakaraka === profile.darakaraka_planet;
+
+      // Nadi Dosha detection (same Nadi AND same Pada = dosha)
+      let hasNadiDosha = false;
+      if (profile.moon_nakshatra_index && currentNadi) {
+        const candidateNadi = NAKSHATRA_TO_NADI[profile.moon_nakshatra_index];
+        const candidatePada = getPadaFromChart(profile.vedic_chart);
+        
+        if (candidateNadi === currentNadi && candidatePada === currentPada) {
+          hasNadiDosha = true;
+        }
+      }
       
       return {
         ...profile,
         manglikPriority,
         isSoulmate: !!isSoulmate,
+        hasNadiDosha,
       };
     });
 
-    profilesWithPriority.sort((a, b) => a.manglikPriority - b.manglikPriority);
+    console.log(`Processed ${profilesWithMetadata.length} profiles with metadata`);
+    console.log(`Soulmates: ${profilesWithMetadata.filter(p => p.isSoulmate).length}`);
+    console.log(`Nadi Dosha: ${profilesWithMetadata.filter(p => p.hasNadiDosha).length}`);
 
     return new Response(
       JSON.stringify({
-        profiles: profilesWithPriority,
+        profiles: profilesWithMetadata,
         currentProfile: {
           id: currentProfile.id,
           moon_nakshatra_index: currentProfile.moon_nakshatra_index,
