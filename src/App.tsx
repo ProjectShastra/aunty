@@ -11,6 +11,7 @@ import ProfileView from "./pages/ProfileView";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Browse from "./pages/Browse";
+import SignUp from "./pages/SignUp";
 import MainNav from "./components/MainNav";
 import { ThemeProvider } from "./theme/ThemeContext";
 import { AuthProvider } from "./hooks/useAuth";
@@ -49,6 +50,7 @@ const App = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/signup" element={<SignUp />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/browse" element={<Browse />} />
                 <Route path="/match" element={<MatchView />} />

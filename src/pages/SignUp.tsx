@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,30 +18,93 @@ import {
   MapPin, 
   User, 
   Mail,
-  ChevronDown
+  ChevronDown,
+  Lock,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import InfoTooltip from "@/components/InfoTooltip";
-import { 
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-} from "@/components/ui/form";
 import AuntyMascot from "@/components/AuntyMascot";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+
+interface SignUpFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const SignUp = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<SignUpFormData>();
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [hour, setHour] = useState<string>("");
   const [minute, setMinute] = useState<string>("");
   const [ampm, setAmpm] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+  const [lookingFor, setLookingFor] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+  
+  const password = watch("password");
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    // Here we would integrate with the prediction engine
+  const onSubmit = async (data: SignUpFormData) => {
+    // Validate passwords match
+    if (data.password !== data.confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+    
+    // Validate password length
+    if (data.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const { error } = await signUp(data.email, data.password);
+      
+      if (error) {
+        // Handle specific error cases
+        if (error.message.includes("already registered")) {
+          toast.error("This email is already registered. Please log in instead.");
+        } else if (error.message.includes("invalid email")) {
+          toast.error("Please enter a valid email address");
+        } else {
+          toast.error(`Sign up failed: ${error.message}`);
+        }
+        return;
+      }
+      
+      toast.success("Account created! Redirecting to complete your profile...");
+      
+      // Store form data for onboarding
+      sessionStorage.setItem('signupData', JSON.stringify({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        selectedDate,
+        hour,
+        minute,
+        ampm,
+        gender,
+        lookingFor
+      }));
+      
+      // Redirect to onboarding after short delay
+      setTimeout(() => {
+        navigate("/onboarding");
+      }, 1500);
+      
+    } catch (err: any) {
+      toast.error(`An unexpected error occurred: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -91,19 +153,25 @@ const SignUp = () => {
                           <Label htmlFor="firstName" className="text-[#6d4773]/80 font-normal">First Name</Label>
                           <Input
                             id="firstName"
-                            {...register("firstName", { required: true })}
+                            {...register("firstName", { required: "First name is required" })}
                             placeholder="First name"
                             className={errors.firstName ? "border-red-300" : "border-gray-100"}
                           />
+                          {errors.firstName && (
+                            <p className="text-xs text-red-500">{errors.firstName.message}</p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName" className="text-[#6d4773]/80 font-normal">Last Name</Label>
                           <Input
                             id="lastName"
-                            {...register("lastName", { required: true })}
+                            {...register("lastName", { required: "Last name is required" })}
                             placeholder="Last name"
                             className={errors.lastName ? "border-red-300" : "border-gray-100"}
                           />
+                          {errors.lastName && (
+                            <p className="text-xs text-red-500">{errors.lastName.message}</p>
+                          )}
                         </div>
                       </div>
 
@@ -114,10 +182,19 @@ const SignUp = () => {
                         <Input
                           id="email"
                           type="email"
-                          {...register("email", { required: true })}
+                          {...register("email", { 
+                            required: "Email is required",
+                            pattern: {
+                              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                              message: "Invalid email address"
+                            }
+                          })}
                           placeholder="Your email"
                           className={errors.email ? "border-red-300" : "border-gray-100"}
                         />
+                        {errors.email && (
+                          <p className="text-xs text-red-500">{errors.email.message}</p>
+                        )}
                         <Collapsible>
                           <CollapsibleTrigger className="flex items-center text-xs text-[#6d4773]/60 mt-1 italic">
                             <Mail className="h-3 w-3 inline mr-1" />
@@ -130,6 +207,47 @@ const SignUp = () => {
                             </p>
                           </CollapsibleContent>
                         </Collapsible>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="password" className="text-[#6d4773]/80 font-normal flex items-center gap-1.5">
+                            <Lock className="h-3 w-3" />
+                            <span>Password</span>
+                          </Label>
+                          <Input
+                            id="password"
+                            type="password"
+                            {...register("password", { 
+                              required: "Password is required",
+                              minLength: {
+                                value: 6,
+                                message: "Password must be at least 6 characters"
+                              }
+                            })}
+                            placeholder="Create password"
+                            className={errors.password ? "border-red-300" : "border-gray-100"}
+                          />
+                          {errors.password && (
+                            <p className="text-xs text-red-500">{errors.password.message}</p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="confirmPassword" className="text-[#6d4773]/80 font-normal">Confirm Password</Label>
+                          <Input
+                            id="confirmPassword"
+                            type="password"
+                            {...register("confirmPassword", { 
+                              required: "Please confirm your password",
+                              validate: value => value === password || "Passwords don't match"
+                            })}
+                            placeholder="Confirm password"
+                            className={errors.confirmPassword ? "border-red-300" : "border-gray-100"}
+                          />
+                          {errors.confirmPassword && (
+                            <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -243,7 +361,7 @@ const SignUp = () => {
                     <div className="grid grid-cols-2 gap-6 mb-4">
                       <div className="space-y-2">
                         <Label className="text-[#6d4773]/80 font-normal">I am</Label>
-                        <Select>
+                        <Select value={gender} onValueChange={setGender}>
                           <SelectTrigger className="w-full border-gray-100">
                             <SelectValue placeholder="Select gender" />
                           </SelectTrigger>
@@ -258,7 +376,7 @@ const SignUp = () => {
 
                       <div className="space-y-2">
                         <Label className="text-[#6d4773]/80 font-normal">Looking for</Label>
-                        <Select>
+                        <Select value={lookingFor} onValueChange={setLookingFor}>
                           <SelectTrigger className="w-full border-gray-100">
                             <SelectValue placeholder="Select preference" />
                           </SelectTrigger>
@@ -272,14 +390,25 @@ const SignUp = () => {
                     </div>
                   </div>
                   
-                  <Button type="submit" className="w-full bg-[#e45964] hover:bg-[#d04854] text-white font-normal py-6">
-                    Continue to Next Step
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-[#e45964] hover:bg-[#d04854] text-white font-normal py-6"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating Account...
+                      </>
+                    ) : (
+                      "Continue to Next Step"
+                    )}
                   </Button>
                 </form>
               </CardContent>
               <CardFooter className="flex justify-center border-t border-gray-50 pt-5 pb-6">
                 <p className="text-sm text-gray-500">
-                  Already have an account? <Link to="/login" className="text-[#e45964] hover:text-[#d04854]">Log in</Link>
+                  Already have an account? <Link to="/auth" className="text-[#e45964] hover:text-[#d04854]">Log in</Link>
                 </p>
               </CardFooter>
             </Card>
