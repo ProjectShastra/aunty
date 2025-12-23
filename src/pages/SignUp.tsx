@@ -1,32 +1,20 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { format, setMonth, setYear } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Separator } from "@/components/ui/separator";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { 
   ArrowLeft, 
-  Calendar as CalendarIcon, 
-  Clock, 
-  User, 
   Mail,
-  ChevronDown,
   Lock,
-  Loader2
+  Loader2,
+  Sparkles,
+  User
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import InfoTooltip from "@/components/InfoTooltip";
-import AuntyMascot from "@/components/AuntyMascot";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { LocationPicker, LocationData } from "@/components/onboarding/LocationPicker";
+import { motion } from "framer-motion";
 
 interface SignUpFormData {
   firstName: string;
@@ -38,14 +26,6 @@ interface SignUpFormData {
 
 const SignUp = () => {
   const { register, handleSubmit, formState: { errors }, watch } = useForm<SignUpFormData>();
-  const [selectedDate, setSelectedDate] = useState<Date>();
-  const [hour, setHour] = useState<string>("");
-  const [minute, setMinute] = useState<string>("");
-  const [ampm, setAmpm] = useState<string>("");
-  const [gender, setGender] = useState<string>("");
-  const [lookingFor, setLookingFor] = useState<string>("");
-  const [birthLocation, setBirthLocation] = useState<LocationData | null>(null);
-  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date(2000, 0));
   const [isLoading, setIsLoading] = useState(false);
   
   const { signUp } = useAuth();
@@ -54,15 +34,13 @@ const SignUp = () => {
   const password = watch("password");
 
   const onSubmit = async (data: SignUpFormData) => {
-    // Validate passwords match
     if (data.password !== data.confirmPassword) {
-      toast.error("Passwords don't match");
+      toast.error("Passwords don't match, bestie!");
       return;
     }
     
-    // Validate password length
     if (data.password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error("Password needs at least 6 characters");
       return;
     }
 
@@ -72,388 +50,206 @@ const SignUp = () => {
       const { error } = await signUp(data.email, data.password);
       
       if (error) {
-        // Handle specific error cases
         if (error.message.includes("already registered")) {
-          toast.error("This email is already registered. Please log in instead.");
+          toast.error("This email is already registered. Log in instead!");
         } else if (error.message.includes("invalid email")) {
-          toast.error("Please enter a valid email address");
+          toast.error("That email doesn't look right...");
         } else {
           toast.error(`Sign up failed: ${error.message}`);
         }
         return;
       }
       
-      toast.success("Account created! Redirecting to complete your profile...");
+      toast.success("Account created! Let's set up your cosmic profile ✨");
       
-      // Store form data for onboarding
       sessionStorage.setItem('signupData', JSON.stringify({
         firstName: data.firstName,
         lastName: data.lastName,
-        selectedDate,
-        hour,
-        minute,
-        ampm,
-        gender,
-        lookingFor
       }));
       
-      // Redirect to onboarding after short delay
       setTimeout(() => {
         navigate("/onboarding");
       }, 1500);
       
     } catch (err: any) {
-      toast.error(`An unexpected error occurred: ${err.message}`);
+      toast.error(`Something went wrong: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9fc] py-8 px-4">
-      <div className="container mx-auto max-w-5xl">
-        <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-center">
-          <div className="w-full md:w-1/3 flex justify-center md:sticky md:top-8">
-            <AuntyMascot />
-          </div>
-          
-          <div className="w-full md:w-2/3">
-            <Link to="/" className="inline-flex items-center text-[#e45964] hover:text-[#d04854] mb-8">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
-            </Link>
-            
-            <div className="mb-4">
-              <span className="inline-block px-3 py-1 text-xs font-medium bg-[#faf3eb] text-[#6d4773] rounded-full">
-                Powered by Ancient Vedic Astrology
-              </span>
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-aunty-pink/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-aunty-purple/20 rounded-full blur-3xl" />
+      
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          <Link 
+            to="/" 
+            className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors mb-8"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Home
+          </Link>
+
+          {/* Glass card */}
+          <div className="glass-strong rounded-2xl p-8 glow-border">
+            <div className="text-center mb-8">
+              <motion.div
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-aunty-pink to-aunty-purple mb-4"
+              >
+                <Sparkles className="h-8 w-8 text-white" />
+              </motion.div>
+              <h1 className="text-3xl font-bold gradient-text mb-2">
+                Hey there, starshine! ✨
+              </h1>
+              <p className="text-muted-foreground">
+                Aunty's ready to find your cosmic match. Let's get you signed up!
+              </p>
             </div>
-            
-            <Card className="border-gray-100 shadow-sm bg-white">
-              <CardHeader className="space-y-2 border-b border-gray-50 pb-5">
-                <CardTitle className="text-2xl font-medium text-[#6d4773]">Begin Your Journey</CardTitle>
-                <CardDescription className="text-[#6d4773]/70 text-base">
-                  Aunty just needs your birth info to find your cosmic match — don't worry, she'll keep it private 😉
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-8 space-y-8">
-                <p className="text-sm text-center mb-2 text-[#6d4773]/80">
-                  Accurate birth details = better compatibility scores
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="text-foreground/80">
+                    First Name
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="firstName"
+                      {...register("firstName", { required: "What's your name?" })}
+                      placeholder="First name"
+                      className="pl-10 bg-muted/50 border-border focus:border-primary focus:ring-primary"
+                    />
+                  </div>
+                  {errors.firstName && (
+                    <p className="text-xs text-destructive">{errors.firstName.message}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-foreground/80">
+                    Last Name
+                  </Label>
+                  <Input
+                    id="lastName"
+                    {...register("lastName", { required: "And the last name?" })}
+                    placeholder="Last name"
+                    className="bg-muted/50 border-border focus:border-primary focus:ring-primary"
+                  />
+                  {errors.lastName && (
+                    <p className="text-xs text-destructive">{errors.lastName.message}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-foreground/80">
+                  Email
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    {...register("email", { 
+                      required: "Aunty needs your email!",
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "That email doesn't look right"
+                      }
+                    })}
+                    placeholder="your.email@example.com"
+                    className="pl-10 bg-muted/50 border-border focus:border-primary focus:ring-primary"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground italic">
+                  Don't worry, Aunty won't spam you. She's too busy matchmaking! 💅
                 </p>
-                
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                  <div className="rounded-lg bg-[#faf9fc] p-5 border border-gray-100">
-                    <div className="flex items-center mb-5 min-w-0">
-                      <User className="h-5 w-5 text-[#6d4773] mr-2 shrink-0" />
-                      <h3 className="text-base font-semibold text-[#6d4773] whitespace-nowrap">Your Identity</h3>
-                      <Separator className="flex-grow ml-3 shrink" />
-                    </div>
-                    
-                    <div className="space-y-5">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="firstName" className="text-[#6d4773]/80 font-normal">First Name</Label>
-                          <Input
-                            id="firstName"
-                            {...register("firstName", { required: "First name is required" })}
-                            placeholder="First name"
-                            className={errors.firstName ? "border-red-300" : "border-gray-100"}
-                          />
-                          {errors.firstName && (
-                            <p className="text-xs text-red-500">{errors.firstName.message}</p>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="lastName" className="text-[#6d4773]/80 font-normal">Last Name</Label>
-                          <Input
-                            id="lastName"
-                            {...register("lastName", { required: "Last name is required" })}
-                            placeholder="Last name"
-                            className={errors.lastName ? "border-red-300" : "border-gray-100"}
-                          />
-                          {errors.lastName && (
-                            <p className="text-xs text-red-500">{errors.lastName.message}</p>
-                          )}
-                        </div>
-                      </div>
+              </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="text-[#6d4773]/80 font-normal flex items-center gap-1.5">
-                          <span>Email</span>
-                        </Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          {...register("email", { 
-                            required: "Email is required",
-                            pattern: {
-                              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                              message: "Invalid email address"
-                            }
-                          })}
-                          placeholder="Your email"
-                          className={errors.email ? "border-red-300" : "border-gray-100"}
-                        />
-                        {errors.email && (
-                          <p className="text-xs text-red-500">{errors.email.message}</p>
-                        )}
-                        <Collapsible>
-                          <CollapsibleTrigger className="flex items-center text-xs text-[#6d4773]/60 mt-1 italic">
-                            <Mail className="h-3 w-3 inline mr-1" />
-                            <span>Email privacy note</span>
-                            <ChevronDown className="h-3 w-3 ml-1" />
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <p className="text-xs text-[#6d4773]/60 mt-1 italic pl-4">
-                              She won't spam you. She's not that kind of Aunty.
-                            </p>
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="password" className="text-[#6d4773]/80 font-normal flex items-center gap-1.5">
-                            <Lock className="h-3 w-3" />
-                            <span>Password</span>
-                          </Label>
-                          <Input
-                            id="password"
-                            type="password"
-                            {...register("password", { 
-                              required: "Password is required",
-                              minLength: {
-                                value: 6,
-                                message: "Password must be at least 6 characters"
-                              }
-                            })}
-                            placeholder="Create password"
-                            className={errors.password ? "border-red-300" : "border-gray-100"}
-                          />
-                          {errors.password && (
-                            <p className="text-xs text-red-500">{errors.password.message}</p>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="confirmPassword" className="text-[#6d4773]/80 font-normal">Confirm Password</Label>
-                          <Input
-                            id="confirmPassword"
-                            type="password"
-                            {...register("confirmPassword", { 
-                              required: "Please confirm your password",
-                              validate: value => value === password || "Passwords don't match"
-                            })}
-                            placeholder="Confirm password"
-                            className={errors.confirmPassword ? "border-red-300" : "border-gray-100"}
-                          />
-                          {errors.confirmPassword && (
-                            <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-foreground/80">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      {...register("password", { 
+                        required: "Set a password",
+                        minLength: { value: 6, message: "At least 6 characters" }
+                      })}
+                      placeholder="••••••"
+                      className="pl-10 bg-muted/50 border-border focus:border-primary focus:ring-primary"
+                    />
                   </div>
+                  {errors.password && (
+                    <p className="text-xs text-destructive">{errors.password.message}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="text-foreground/80">
+                    Confirm
+                  </Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    {...register("confirmPassword", { 
+                      required: "Confirm it!",
+                      validate: value => value === password || "Doesn't match"
+                    })}
+                    placeholder="••••••"
+                    className="bg-muted/50 border-border focus:border-primary focus:ring-primary"
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+                  )}
+                </div>
+              </div>
 
-                  <div className="rounded-lg bg-[#faf9fc] p-5 border border-gray-100">
-                    <div className="flex items-center mb-5 min-w-0">
-                      <CalendarIcon className="h-5 w-5 text-[#6d4773] mr-2 shrink-0" />
-                      <h3 className="text-base font-semibold text-[#6d4773] whitespace-nowrap">Birth Details</h3>
-                      <Separator className="flex-grow ml-3 shrink" />
-                    </div>
-                    
-                    <div className="space-y-5">
-                      <div className="space-y-2">
-                        <Label className="text-[#6d4773]/80 font-normal">Birth Date</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal border-gray-100 h-10",
-                                !selectedDate && "text-gray-400"
-                              )}
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {selectedDate ? format(selectedDate, "PPP") : <span>Select your birth date</span>}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <div className="p-3 border-b border-gray-100 bg-white">
-                              <div className="flex gap-2">
-                                <Select
-                                  value={calendarMonth.getMonth().toString()}
-                                  onValueChange={(value) => {
-                                    const newDate = setMonth(calendarMonth, parseInt(value));
-                                    setCalendarMonth(newDate);
-                                  }}
-                                >
-                                  <SelectTrigger className="w-[120px] h-8 text-sm">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {["January", "February", "March", "April", "May", "June", 
-                                      "July", "August", "September", "October", "November", "December"
-                                    ].map((month, i) => (
-                                      <SelectItem key={month} value={i.toString()}>{month}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                                <Select
-                                  value={calendarMonth.getFullYear().toString()}
-                                  onValueChange={(value) => {
-                                    const newDate = setYear(calendarMonth, parseInt(value));
-                                    setCalendarMonth(newDate);
-                                  }}
-                                >
-                                  <SelectTrigger className="w-[90px] h-8 text-sm">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent className="max-h-[200px]">
-                                    {Array.from({ length: 80 }, (_, i) => new Date().getFullYear() - 18 - i).map((year) => (
-                                      <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            <Calendar
-                              mode="single"
-                              selected={selectedDate}
-                              onSelect={setSelectedDate}
-                              month={calendarMonth}
-                              onMonthChange={setCalendarMonth}
-                              initialFocus
-                              className="bg-white pointer-events-auto"
-                              disabled={(date) => date > new Date() || date < new Date("1920-01-01")}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-aunty-pink to-aunty-purple hover:opacity-90 transition-opacity glow-pink"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Creating your account...
+                  </>
+                ) : (
+                  <>
+                    Let's Go! 🚀
+                  </>
+                )}
+              </Button>
+            </form>
 
-                      <div className="space-y-2">
-                        <Label className="text-[#6d4773]/80 font-normal flex items-center gap-1.5">
-                          <span>Birth Time</span>
-                          <InfoTooltip text="Used to calculate your cosmic blueprint (D-1, D-9) for more accurate matches" />
-                        </Label>
-                        <div className="grid grid-cols-3 gap-3">
-                          <Input 
-                            placeholder="Hour" 
-                            type="number" 
-                            min="1" 
-                            max="12" 
-                            className="border-gray-100" 
-                            value={hour}
-                            onChange={(e) => setHour(e.target.value)}
-                          />
-                          <Input 
-                            placeholder="Minute" 
-                            type="number" 
-                            min="0" 
-                            max="59" 
-                            className="border-gray-100" 
-                            value={minute}
-                            onChange={(e) => setMinute(e.target.value)}
-                          />
-                          <Select value={ampm} onValueChange={setAmpm}>
-                            <SelectTrigger className="border-gray-100">
-                              <SelectValue placeholder="AM/PM" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="am">AM</SelectItem>
-                              <SelectItem value="pm">PM</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <Collapsible>
-                          <CollapsibleTrigger className="flex items-center text-xs text-[#6d4773]/60 mt-1 italic">
-                            <Clock className="h-3 w-3 inline mr-1" />
-                            <span>Birth time tip</span>
-                            <ChevronDown className="h-3 w-3 ml-1" />
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <p className="text-xs text-[#6d4773]/60 mt-1 italic pl-4">
-                              Don't guess — text your mom if you have to.
-                            </p>
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-[#6d4773]/80 font-normal flex items-center gap-1.5">
-                          <span>Birth City</span>
-                          <InfoTooltip text="Needed to determine planetary positions accurately for Vedic compatibility analysis" />
-                        </Label>
-                        <LocationPicker
-                          value={birthLocation}
-                          onChange={setBirthLocation}
-                          placeholder="Search for your birth city..."
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="rounded-lg bg-[#faf9fc] p-5 border border-gray-100">
-                    <div className="flex items-center mb-5">
-                      <h3 className="text-base font-semibold text-[#6d4773]">Your Preferences</h3>
-                      <Separator className="flex-grow ml-3" />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-6 mb-4">
-                      <div className="space-y-2">
-                        <Label className="text-[#6d4773]/80 font-normal">I am</Label>
-                        <Select value={gender} onValueChange={setGender}>
-                          <SelectTrigger className="w-full border-gray-100">
-                            <SelectValue placeholder="Select gender" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="male">Man</SelectItem>
-                            <SelectItem value="female">Woman</SelectItem>
-                            <SelectItem value="nonbinary">Non-binary</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label className="text-[#6d4773]/80 font-normal">Looking for</Label>
-                        <Select value={lookingFor} onValueChange={setLookingFor}>
-                          <SelectTrigger className="w-full border-gray-100">
-                            <SelectValue placeholder="Select preference" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="men">Men</SelectItem>
-                            <SelectItem value="women">Women</SelectItem>
-                            <SelectItem value="everyone">Everyone</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-[#e45964] hover:bg-[#d04854] text-white font-normal py-6"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating Account...
-                      </>
-                    ) : (
-                      "Continue to Next Step"
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-              <CardFooter className="flex justify-center border-t border-gray-50 pt-5 pb-6">
-                <p className="text-sm text-gray-500">
-                  Already have an account? <Link to="/auth" className="text-[#e45964] hover:text-[#d04854]">Log in</Link>
-                </p>
-              </CardFooter>
-            </Card>
+            <div className="mt-6 text-center">
+              <p className="text-muted-foreground text-sm">
+                Already have an account?{" "}
+                <Link to="/auth" className="text-primary hover:underline font-medium">
+                  Log in here
+                </Link>
+              </p>
+            </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

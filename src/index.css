@@ -2,106 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Add Google Fonts links (these would be added to index.html in actual implementation) */
-/* 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap">
-*/
-
 @layer base {
   :root {
-    --background: 270 20% 98%;
-    --foreground: 280 30% 20%;
+    /* Cyber-Vedic Neon Theme */
+    --background: 260 80% 8%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 280 30% 20%;
+    --card: 260 60% 12%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 280 30% 20%;
+    --popover: 260 60% 12%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 355 75% 62%;
+    /* Electric Pink - Primary CTA */
+    --primary: 330 100% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 280 25% 45%;
+    /* Neon Purple - Secondary */
+    --secondary: 280 100% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 270 15% 94%;
-    --muted-foreground: 280 20% 45%;
-
-    --accent: 35 60% 95%;
-    --accent-foreground: 280 30% 25%;
-
-    --destructive: 0 84.2% 60.2%;
+    /* Light Red for action buttons */
+    --destructive: 0 85% 65%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 280 15% 88%;
-    --input: 280 15% 88%;
-    --ring: 355 75% 62%;
+    --muted: 260 40% 18%;
+    --muted-foreground: 280 30% 75%;
 
-    --radius: 0.75rem;
+    --accent: 280 60% 25%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Aunty brand colors */
-    --aunty-coral: 355 75% 62%;
-    --aunty-purple: 280 25% 45%;
-    --aunty-cream: 35 60% 95%;
-    --aunty-gold: 45 80% 55%;
-    --aunty-success: 160 60% 45%;
+    --border: 280 50% 30%;
+    --input: 260 50% 20%;
+    --ring: 330 100% 50%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 1rem;
+
+    /* Cyber-Vedic brand colors */
+    --aunty-pink: 330 100% 50%;
+    --aunty-purple: 280 100% 50%;
+    --aunty-red: 0 85% 65%;
+    --aunty-violet: 260 80% 8%;
+    --aunty-glow: 280 100% 70%;
+
+    /* Glassmorphism */
+    --glass-bg: 260 60% 15%;
+    --glass-border: 280 50% 40%;
+
+    --sidebar-background: 260 60% 10%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 330 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 280 60% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 280 50% 30%;
+    --sidebar-ring: 330 100% 50%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Dark mode is same as default for Cyber-Vedic */
+    --background: 260 80% 8%;
+    --foreground: 0 0% 100%;
+    --card: 260 60% 12%;
+    --card-foreground: 0 0% 100%;
+    --popover: 260 60% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 330 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 280 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 260 40% 18%;
+    --muted-foreground: 280 30% 75%;
+    --accent: 280 60% 25%;
+    --accent-foreground: 0 0% 100%;
+    --border: 280 50% 30%;
+    --input: 260 50% 20%;
+    --ring: 330 100% 50%;
   }
-  
-  /* Custom typography styles */
-  body.playful {
-    font-family: 'Quicksand', sans-serif;
-  }
-  
-  body.elegant {
-    font-family: 'Playfair Display', serif;
+
+  /* Syne font for Cyber-Vedic */
+  body {
+    font-family: 'Syne', sans-serif;
   }
 }
 
@@ -115,20 +96,116 @@
   }
 }
 
-/* Add custom styles for different theme appearances */
-.aunty-prominent {
-  --aunty-scale: 1;
+/* Glassmorphism utilities */
+.glass {
+  background: hsl(var(--glass-bg) / 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid hsl(var(--glass-border) / 0.3);
 }
 
-.aunty-subtle {
-  --aunty-scale: 0.75;
+.glass-strong {
+  background: hsl(var(--glass-bg) / 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid hsl(var(--glass-border) / 0.4);
 }
 
-.aunty-minimal {
-  --aunty-scale: 0.5;
+/* Neon glow effects */
+.glow-pink {
+  box-shadow: 0 0 20px hsl(var(--aunty-pink) / 0.5),
+              0 0 40px hsl(var(--aunty-pink) / 0.3),
+              0 0 60px hsl(var(--aunty-pink) / 0.1);
 }
 
-/* Theme transition effects */
-.theme-transition {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+.glow-purple {
+  box-shadow: 0 0 20px hsl(var(--aunty-purple) / 0.5),
+              0 0 40px hsl(var(--aunty-purple) / 0.3),
+              0 0 60px hsl(var(--aunty-purple) / 0.1);
+}
+
+.glow-border {
+  border: 1px solid transparent;
+  background: linear-gradient(hsl(var(--card)), hsl(var(--card))) padding-box,
+              linear-gradient(135deg, hsl(var(--aunty-pink)), hsl(var(--aunty-purple))) border-box;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, hsl(var(--aunty-pink)), hsl(var(--aunty-purple)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Neon border animation */
+@keyframes neon-pulse {
+  0%, 100% {
+    box-shadow: 0 0 10px hsl(var(--aunty-pink) / 0.5),
+                0 0 20px hsl(var(--aunty-pink) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px hsl(var(--aunty-pink) / 0.8),
+                0 0 40px hsl(var(--aunty-pink) / 0.5);
+  }
+}
+
+.neon-pulse {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
+
+/* Progress bar glow */
+@keyframes progress-glow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.progress-gradient {
+  background: linear-gradient(90deg, 
+    hsl(var(--aunty-pink)), 
+    hsl(var(--aunty-purple)), 
+    hsl(var(--aunty-pink)));
+  background-size: 200% 100%;
+  animation: progress-glow 2s linear infinite;
+}
+
+/* Floating animation for mascot */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Step transition */
+.step-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.step-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.step-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.step-exit-active {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
