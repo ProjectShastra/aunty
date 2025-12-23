@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { format, setMonth, setYear } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,6 @@ import {
   ArrowLeft, 
   Calendar as CalendarIcon, 
   Clock, 
-  MapPin, 
   User, 
   Mail,
   ChevronDown,
@@ -27,6 +26,7 @@ import InfoTooltip from "@/components/InfoTooltip";
 import AuntyMascot from "@/components/AuntyMascot";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { LocationPicker, LocationData } from "@/components/onboarding/LocationPicker";
 
 interface SignUpFormData {
   firstName: string;
@@ -44,6 +44,8 @@ const SignUp = () => {
   const [ampm, setAmpm] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [lookingFor, setLookingFor] = useState<string>("");
+  const [birthLocation, setBirthLocation] = useState<LocationData | null>(null);
+  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date(2000, 0));
   const [isLoading, setIsLoading] = useState(false);
   
   const { signUp } = useAuth();
@@ -141,10 +143,10 @@ const SignUp = () => {
                 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                   <div className="rounded-lg bg-[#faf9fc] p-5 border border-gray-100">
-                    <div className="flex items-center mb-5">
-                      <User className="h-5 w-5 text-[#6d4773] mr-2" />
-                      <h3 className="text-base font-semibold text-[#6d4773]">Your Identity</h3>
-                      <Separator className="flex-grow ml-3" />
+                    <div className="flex items-center mb-5 min-w-0">
+                      <User className="h-5 w-5 text-[#6d4773] mr-2 shrink-0" />
+                      <h3 className="text-base font-semibold text-[#6d4773] whitespace-nowrap">Your Identity</h3>
+                      <Separator className="flex-grow ml-3 shrink" />
                     </div>
                     
                     <div className="space-y-5">
@@ -253,10 +255,10 @@ const SignUp = () => {
                   </div>
 
                   <div className="rounded-lg bg-[#faf9fc] p-5 border border-gray-100">
-                    <div className="flex items-center mb-5">
-                      <CalendarIcon className="h-5 w-5 text-[#6d4773] mr-2" />
-                      <h3 className="text-base font-semibold text-[#6d4773]">Your Birth Details</h3>
-                      <Separator className="flex-grow ml-3" />
+                    <div className="flex items-center mb-5 min-w-0">
+                      <CalendarIcon className="h-5 w-5 text-[#6d4773] mr-2 shrink-0" />
+                      <h3 className="text-base font-semibold text-[#6d4773] whitespace-nowrap">Birth Details</h3>
+                      <Separator className="flex-grow ml-3 shrink" />
                     </div>
                     
                     <div className="space-y-5">
@@ -276,12 +278,53 @@ const SignUp = () => {
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
+                            <div className="p-3 border-b border-gray-100 bg-white">
+                              <div className="flex gap-2">
+                                <Select
+                                  value={calendarMonth.getMonth().toString()}
+                                  onValueChange={(value) => {
+                                    const newDate = setMonth(calendarMonth, parseInt(value));
+                                    setCalendarMonth(newDate);
+                                  }}
+                                >
+                                  <SelectTrigger className="w-[120px] h-8 text-sm">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {["January", "February", "March", "April", "May", "June", 
+                                      "July", "August", "September", "October", "November", "December"
+                                    ].map((month, i) => (
+                                      <SelectItem key={month} value={i.toString()}>{month}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Select
+                                  value={calendarMonth.getFullYear().toString()}
+                                  onValueChange={(value) => {
+                                    const newDate = setYear(calendarMonth, parseInt(value));
+                                    setCalendarMonth(newDate);
+                                  }}
+                                >
+                                  <SelectTrigger className="w-[90px] h-8 text-sm">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="max-h-[200px]">
+                                    {Array.from({ length: 80 }, (_, i) => new Date().getFullYear() - 18 - i).map((year) => (
+                                      <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
                             <Calendar
                               mode="single"
                               selected={selectedDate}
                               onSelect={setSelectedDate}
+                              month={calendarMonth}
+                              onMonthChange={setCalendarMonth}
                               initialFocus
                               className="bg-white pointer-events-auto"
+                              disabled={(date) => date > new Date() || date < new Date("1920-01-01")}
                             />
                           </PopoverContent>
                         </Popover>
@@ -340,14 +383,11 @@ const SignUp = () => {
                           <span>Birth City</span>
                           <InfoTooltip text="Needed to determine planetary positions accurately for Vedic compatibility analysis" />
                         </Label>
-                        <Input 
-                          placeholder="Where were you born?" 
-                          className="border-gray-100" 
+                        <LocationPicker
+                          value={birthLocation}
+                          onChange={setBirthLocation}
+                          placeholder="Search for your birth city..."
                         />
-                        <p className="text-xs text-[#6d4773]/60 mt-1">
-                          <MapPin className="h-3 w-3 inline mr-1" />
-                          Type your city's name to search our database.
-                        </p>
                       </div>
                     </div>
                   </div>
