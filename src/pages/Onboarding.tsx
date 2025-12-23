@@ -1,71 +1,149 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Camera, 
+  User, 
+  Heart, 
+  Calendar, 
+  Clock, 
+  MapPin,
+  Sparkles,
+  Loader2
+} from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Separator } from '@/components/ui/separator';
-import { Calendar as CalendarIcon, Clock, Sparkles, User, Heart } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 import { PhotoUpload } from '@/components/onboarding/PhotoUpload';
 import { LocationPicker, LocationData } from '@/components/onboarding/LocationPicker';
 import { AnalyzingScreen } from '@/components/onboarding/AnalyzingScreen';
-import AuntyMascot from '@/components/AuntyMascot';
+import { OnboardingTimePicker } from '@/components/onboarding/OnboardingTimePicker';
+import { OnboardingDatePicker } from '@/components/onboarding/OnboardingDatePicker';
 
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateProfile } from '@/lib/vedic-astrology';
 import { getElementFromMoonSign } from '@/lib/element-calculator';
 
-const onboardingSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  bio: z.string().max(500, 'Bio must be less than 500 characters').optional(),
-  gender: z.string().min(1, 'Please select your gender'),
-  lookingFor: z.string().min(1, 'Please select who you are looking for'),
-  birthDate: z.date({ required_error: 'Birth date is required' }),
-  birthHour: z.string().min(1, 'Hour is required'),
-  birthMinute: z.string().min(1, 'Minute is required'),
-  birthAmPm: z.string().min(1, 'AM/PM is required'),
-});
+const TOTAL_STEPS = 7;
 
-type OnboardingForm = z.infer<typeof onboardingSchema>;
+const stepConfig = [
+  { 
+    id: 'photos', 
+    icon: Camera, 
+    title: "Show Aunty that face! 📸",
+    subtitle: "Upload your best pics so your matches can see the real you"
+  },
+  { 
+    id: 'name', 
+    icon: User, 
+    title: "What should Aunty call you?",
+    subtitle: "Your name is the first thing your matches will see"
+  },
+  { 
+    id: 'bio', 
+    icon: Sparkles, 
+    title: "Spill the tea about yourself ☕",
+    subtitle: "A little bio goes a long way"
+  },
+  { 
+    id: 'identity', 
+    icon: Heart, 
+    title: "Tell Aunty who you are...",
+    subtitle: "...and who you're looking for"
+  },
+  { 
+    id: 'birthdate', 
+    icon: Calendar, 
+    title: "When did you enter this world? 🌟",
+    subtitle: "Aunty needs your exact birth date for the stars"
+  },
+  { 
+    id: 'birthtime', 
+    icon: Clock, 
+    title: "What time were you born? ⏰",
+    subtitle: "Text your mom if you have to—Aunty needs precision!"
+  },
+  { 
+    id: 'location', 
+    icon: MapPin, 
+    title: "Where were you born? 🌍",
+    subtitle: "City of birth helps Aunty read your charts perfectly"
+  },
+];
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  const [photos, setPhotos] = useState<(File | null)[]>([null, null]);
-  const [birthLocation, setBirthLocation] = useState<LocationData | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form data
+  const [photos, setPhotos] = useState<(File | null)[]>([null, null]);
+  const [name, setName] = useState('');
+  const [bio, setBio] = useState('');
+  const [gender, setGender] = useState('');
+  const [lookingFor, setLookingFor] = useState('');
+  const [birthDate, setBirthDate] = useState<Date | null>(null);
+  const [birthHour, setBirthHour] = useState('');
+  const [birthMinute, setBirthMinute] = useState('');
+  const [birthAmPm, setBirthAmPm] = useState('');
+  const [birthLocation, setBirthLocation] = useState<LocationData | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors }
-  } = useForm<OnboardingForm>({
-    resolver: zodResolver(onboardingSchema),
-    defaultValues: {
-      birthHour: '',
-      birthMinute: '',
-      birthAmPm: '',
+  // Load signup data if exists
+  useEffect(() => {
+    const signupData = sessionStorage.getItem('signupData');
+    if (signupData) {
+      const data = JSON.parse(signupData);
+      if (data.firstName) {
+        setName(`${data.firstName}${data.lastName ? ' ' + data.lastName : ''}`);
+      }
     }
-  });
+  }, []);
 
-  const selectedDate = watch('birthDate');
+  const canProceed = () => {
+    switch (stepConfig[currentStep].id) {
+      case 'photos':
+        return photos[0] !== null;
+      case 'name':
+        return name.trim().length >= 2;
+      case 'bio':
+        return true; // Bio is optional
+      case 'identity':
+        return gender !== '' && lookingFor !== '';
+      case 'birthdate':
+        return birthDate !== null;
+      case 'birthtime':
+        return birthHour !== '' && birthMinute !== '' && birthAmPm !== '';
+      case 'location':
+        return birthLocation !== null;
+      default:
+        return true;
+    }
+  };
+
+  const handleNext = () => {
+    if (currentStep < TOTAL_STEPS - 1) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
 
   const uploadPhoto = async (file: File, index: number): Promise<string | null> => {
     if (!user) return null;
@@ -73,7 +151,7 @@ export default function Onboarding() {
     const fileExt = file.name.split('.').pop();
     const fileName = `${user.id}/photo_${index + 1}.${fileExt}`;
     
-    const { error, data } = await supabase.storage
+    const { error } = await supabase.storage
       .from('profile-photos')
       .upload(fileName, file, { upsert: true });
 
@@ -89,19 +167,14 @@ export default function Onboarding() {
     return urlData.publicUrl;
   };
 
-  const onSubmit = async (data: OnboardingForm) => {
+  const handleSubmit = async () => {
     if (!user) {
       toast.error('Please sign in first');
       return;
     }
 
-    if (!birthLocation) {
-      toast.error('Please select your birth city');
-      return;
-    }
-
-    if (!photos[0]) {
-      toast.error('Please upload at least one photo');
+    if (!birthLocation || !birthDate) {
+      toast.error('Missing required birth details');
       return;
     }
 
@@ -109,14 +182,14 @@ export default function Onboarding() {
 
     try {
       // Convert time to 24-hour format
-      let hour = parseInt(data.birthHour);
-      if (data.birthAmPm === 'pm' && hour !== 12) hour += 12;
-      if (data.birthAmPm === 'am' && hour === 12) hour = 0;
-      const birthTime = `${hour.toString().padStart(2, '0')}:${data.birthMinute.padStart(2, '0')}`;
+      let hour = parseInt(birthHour);
+      if (birthAmPm === 'pm' && hour !== 12) hour += 12;
+      if (birthAmPm === 'am' && hour === 12) hour = 0;
+      const birthTime = `${hour.toString().padStart(2, '0')}:${birthMinute.padStart(2, '0')}`;
 
       // Calculate Vedic profile
       const vedicProfile = calculateProfile(
-        data.birthDate,
+        birthDate,
         birthTime,
         birthLocation.latitude,
         birthLocation.longitude,
@@ -135,18 +208,18 @@ export default function Onboarding() {
       // Calculate element from moon sign
       const element = getElementFromMoonSign(vedicProfile.moon.sign);
 
-      // Check manglik cancellation - mild severity = effectively cancelled
+      // Check manglik cancellation
       const isManglik = vedicProfile.doshas.isManglik;
       const manglikCancelled = isManglik && vedicProfile.doshas.manglikSeverity === 'mild';
 
       // Prepare profile data
       const profileData = {
         user_id: user.id,
-        name: data.name,
-        bio: data.bio || null,
-        gender: data.gender,
-        looking_for: data.lookingFor,
-        date_of_birth: format(data.birthDate, 'yyyy-MM-dd'),
+        name: name.trim(),
+        bio: bio.trim() || null,
+        gender,
+        looking_for: lookingFor,
+        date_of_birth: format(birthDate, 'yyyy-MM-dd'),
         birth_time: birthTime,
         birth_latitude: birthLocation.latitude,
         birth_longitude: birthLocation.longitude,
@@ -154,7 +227,6 @@ export default function Onboarding() {
         birth_timezone: birthLocation.timezone,
         photo_1: photo1Url,
         photo_2: photo2Url,
-        // Astrological Keys - karakas are already PlanetId strings
         moon_nakshatra_index: vedicProfile.moon.nakshatra,
         moon_sign_index: vedicProfile.moon.sign,
         ascendant_sign_index: vedicProfile.lagna.sign,
@@ -162,12 +234,11 @@ export default function Onboarding() {
         manglik_cancelled: manglikCancelled,
         atmakaraka_planet: vedicProfile.karakas.atmakaraka,
         darakaraka_planet: vedicProfile.karakas.darakaraka,
-        element: element,
+        element,
         vedic_chart: JSON.parse(JSON.stringify(vedicProfile)),
         onboarding_complete: true,
       };
 
-      // Insert profile (wrap in array for Supabase insert)
       const { error } = await supabase
         .from('profiles')
         .insert([profileData]);
@@ -186,7 +257,7 @@ export default function Onboarding() {
   };
 
   const handleAnalysisComplete = () => {
-    toast.success('Your cosmic profile is ready!');
+    toast.success('Your cosmic profile is ready! ✨');
     navigate('/browse');
   };
 
@@ -194,237 +265,223 @@ export default function Onboarding() {
     return <AnalyzingScreen onComplete={handleAnalysisComplete} />;
   }
 
+  const StepIcon = stepConfig[currentStep].icon;
+
   return (
-    <div className="min-h-screen bg-background py-8 px-4">
-      <div className="container mx-auto max-w-5xl">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-          {/* Left side - Mascot */}
-          <div className="w-full lg:w-1/3 flex justify-center lg:sticky lg:top-8">
-            <div className="space-y-4 text-center">
-              <AuntyMascot />
-              <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                "Beta, tell Aunty everything! The more accurate your details, the better matches I can find!"
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
+      {/* Background glow effects */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-aunty-pink/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-aunty-purple/20 rounded-full blur-3xl" />
+      
+      {/* Progress bar */}
+      <div className="relative z-10 p-4">
+        <div className="flex gap-1 max-w-md mx-auto">
+          {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+            <div
+              key={i}
+              className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                i <= currentStep 
+                  ? 'progress-gradient' 
+                  : 'bg-muted'
+              }`}
+            />
+          ))}
+        </div>
+        <p className="text-center text-sm text-muted-foreground mt-2">
+          Step {currentStep + 1} of {TOTAL_STEPS}
+        </p>
+      </div>
 
-          {/* Right side - Form */}
-          <div className="w-full lg:w-2/3">
-            <div className="mb-6">
-              <span className="inline-block px-3 py-1 text-xs font-medium bg-accent text-accent-foreground rounded-full">
-                <Sparkles className="inline h-3 w-3 mr-1" />
-                Powered by Vedic Astrology
-              </span>
-            </div>
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="glass-strong rounded-2xl p-6 sm:p-8"
+            >
+              {/* Step header */}
+              <div className="text-center mb-8">
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-aunty-pink to-aunty-purple mb-4"
+                >
+                  <StepIcon className="h-7 w-7 text-white" />
+                </motion.div>
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  {stepConfig[currentStep].title}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {stepConfig[currentStep].subtitle}
+                </p>
+              </div>
 
-            <Card className="border-border shadow-lg">
-              <CardHeader className="border-b border-border pb-5">
-                <CardTitle className="text-2xl font-medium text-secondary">Create Your Profile</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Aunty needs your birth details to find your cosmic match — don't worry, she'll keep it private 😉
-                </CardDescription>
-              </CardHeader>
+              {/* Step content */}
+              <div className="space-y-6">
+                {stepConfig[currentStep].id === 'photos' && (
+                  <PhotoUpload photos={photos} onPhotosChange={setPhotos} />
+                )}
 
-              <CardContent className="pt-6">
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                  {/* Photos Section */}
-                  <div className="rounded-lg bg-muted/30 p-5 border border-border">
-                    <div className="flex items-center mb-5">
-                      <User className="h-5 w-5 text-secondary mr-2" />
-                      <h3 className="text-base font-semibold text-secondary">Your Photos</h3>
-                      <Separator className="flex-grow ml-3" />
-                    </div>
-                    <PhotoUpload photos={photos} onPhotosChange={setPhotos} />
-                  </div>
-
-                  {/* Identity Section */}
-                  <div className="rounded-lg bg-muted/30 p-5 border border-border">
-                    <div className="flex items-center mb-5">
-                      <User className="h-5 w-5 text-secondary mr-2" />
-                      <h3 className="text-base font-semibold text-secondary">About You</h3>
-                      <Separator className="flex-grow ml-3" />
-                    </div>
-
-                    <div className="space-y-5">
-                      <div className="space-y-2">
-                        <Label htmlFor="name" className="text-muted-foreground font-normal">Your Name</Label>
-                        <Input
-                          id="name"
-                          {...register('name')}
-                          placeholder="What should we call you?"
-                          className={errors.name ? 'border-destructive' : ''}
-                        />
-                        {errors.name && (
-                          <p className="text-xs text-destructive">{errors.name.message}</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="bio" className="text-muted-foreground font-normal">Bio</Label>
-                        <Textarea
-                          id="bio"
-                          {...register('bio')}
-                          placeholder="Tell potential matches a little about yourself..."
-                          className="min-h-[100px]"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground font-normal">I am</Label>
-                          <Select onValueChange={(v) => setValue('gender', v)}>
-                            <SelectTrigger className={errors.gender ? 'border-destructive' : ''}>
-                              <SelectValue placeholder="Select" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="male">Man</SelectItem>
-                              <SelectItem value="female">Woman</SelectItem>
-                              <SelectItem value="nonbinary">Non-binary</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {errors.gender && (
-                            <p className="text-xs text-destructive">{errors.gender.message}</p>
-                          )}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label className="text-muted-foreground font-normal">Looking for</Label>
-                          <Select onValueChange={(v) => setValue('lookingFor', v)}>
-                            <SelectTrigger className={errors.lookingFor ? 'border-destructive' : ''}>
-                              <SelectValue placeholder="Select" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="men">Men</SelectItem>
-                              <SelectItem value="women">Women</SelectItem>
-                              <SelectItem value="everyone">Everyone</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {errors.lookingFor && (
-                            <p className="text-xs text-destructive">{errors.lookingFor.message}</p>
-                          )}
-                        </div>
-                      </div>
+                {stepConfig[currentStep].id === 'name' && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-foreground/80">Your Name</Label>
+                      <Input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="What should we call you?"
+                        className="bg-muted/50 border-border text-lg py-6 text-center"
+                        autoFocus
+                      />
                     </div>
                   </div>
+                )}
 
-                  {/* Birth Details Section */}
-                  <div className="rounded-lg bg-muted/30 p-5 border border-border">
-                    <div className="flex items-center mb-5">
-                      <CalendarIcon className="h-5 w-5 text-secondary mr-2" />
-                      <h3 className="text-base font-semibold text-secondary">Birth Details</h3>
-                      <Separator className="flex-grow ml-3" />
+                {stepConfig[currentStep].id === 'bio' && (
+                  <div className="space-y-4">
+                    <Textarea
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Tell potential matches a little about yourself... hobbies, vibes, what makes you unique! ✨"
+                      className="bg-muted/50 border-border min-h-[150px] resize-none"
+                      maxLength={500}
+                    />
+                    <p className="text-xs text-muted-foreground text-right">
+                      {bio.length}/500
+                    </p>
+                  </div>
+                )}
+
+                {stepConfig[currentStep].id === 'identity' && (
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <Label className="text-foreground/80">I am a...</Label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[
+                          { value: 'male', label: 'Man' },
+                          { value: 'female', label: 'Woman' },
+                          { value: 'nonbinary', label: 'Non-binary' },
+                        ].map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => setGender(option.value)}
+                            className={`py-3 px-4 rounded-xl font-medium transition-all ${
+                              gender === option.value
+                                ? 'bg-gradient-to-r from-aunty-pink to-aunty-purple text-white glow-pink'
+                                : 'bg-muted/50 text-foreground hover:bg-muted'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-
-                    <div className="space-y-5">
-                      {/* Birth Date */}
-                      <div className="space-y-2">
-                        <Label className="text-muted-foreground font-normal">Birth Date</Label>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !selectedDate && "text-muted-foreground",
-                                errors.birthDate && "border-destructive"
-                              )}
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {selectedDate ? format(selectedDate, 'PPP') : 'Select your birth date'}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={selectedDate}
-                              onSelect={(date) => date && setValue('birthDate', date)}
-                              initialFocus
-                              captionLayout="dropdown-buttons"
-                              fromYear={1940}
-                              toYear={2010}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        {errors.birthDate && (
-                          <p className="text-xs text-destructive">{errors.birthDate.message}</p>
-                        )}
-                      </div>
-
-                      {/* Birth Time */}
-                      <div className="space-y-2">
-                        <Label className="text-muted-foreground font-normal flex items-center gap-1.5">
-                          <Clock className="h-4 w-4" />
-                          Birth Time
-                        </Label>
-                        <div className="grid grid-cols-3 gap-3">
-                          <Input
-                            type="number"
-                            min="1"
-                            max="12"
-                            placeholder="Hour"
-                            {...register('birthHour')}
-                            className={errors.birthHour ? 'border-destructive' : ''}
-                          />
-                          <Input
-                            type="number"
-                            min="0"
-                            max="59"
-                            placeholder="Min"
-                            {...register('birthMinute')}
-                            className={errors.birthMinute ? 'border-destructive' : ''}
-                          />
-                          <Select onValueChange={(v) => setValue('birthAmPm', v)}>
-                            <SelectTrigger className={errors.birthAmPm ? 'border-destructive' : ''}>
-                              <SelectValue placeholder="AM/PM" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="am">AM</SelectItem>
-                              <SelectItem value="pm">PM</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <p className="text-xs text-muted-foreground italic">
-                          Don't guess — text your mom if you have to! 😄
-                        </p>
-                      </div>
-
-                      {/* Birth Location */}
-                      <div className="space-y-2">
-                        <Label className="text-muted-foreground font-normal">Birth City</Label>
-                        <LocationPicker
-                          value={birthLocation}
-                          onChange={setBirthLocation}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Accurate location = better cosmic matches!
-                        </p>
+                    <div className="space-y-3">
+                      <Label className="text-foreground/80">Looking for...</Label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[
+                          { value: 'men', label: 'Men' },
+                          { value: 'women', label: 'Women' },
+                          { value: 'everyone', label: 'Everyone' },
+                        ].map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => setLookingFor(option.value)}
+                            className={`py-3 px-4 rounded-xl font-medium transition-all ${
+                              lookingFor === option.value
+                                ? 'bg-gradient-to-r from-aunty-pink to-aunty-purple text-white glow-pink'
+                                : 'bg-muted/50 text-foreground hover:bg-muted'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
+                )}
 
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-base"
-                  >
-                    {isSubmitting ? (
-                      <>Finding Your Stars...</>
-                    ) : (
-                      <>
-                        <Heart className="mr-2 h-5 w-5" />
-                        Let Aunty Analyze Your Stars
-                      </>
+                {stepConfig[currentStep].id === 'birthdate' && (
+                  <OnboardingDatePicker 
+                    value={birthDate} 
+                    onChange={setBirthDate} 
+                  />
+                )}
+
+                {stepConfig[currentStep].id === 'birthtime' && (
+                  <OnboardingTimePicker
+                    hour={birthHour}
+                    minute={birthMinute}
+                    ampm={birthAmPm}
+                    onHourChange={setBirthHour}
+                    onMinuteChange={setBirthMinute}
+                    onAmPmChange={setBirthAmPm}
+                  />
+                )}
+
+                {stepConfig[currentStep].id === 'location' && (
+                  <div className="space-y-4">
+                    <LocationPicker
+                      value={birthLocation}
+                      onChange={setBirthLocation}
+                      placeholder="Search for your birth city..."
+                    />
+                    {birthLocation && (
+                      <div className="text-center text-sm text-muted-foreground">
+                        📍 {birthLocation.name}, {birthLocation.country}
+                      </div>
                     )}
-                  </Button>
+                  </div>
+                )}
+              </div>
 
-                  <p className="text-center text-xs text-muted-foreground">
-                    Your birth details are used only for compatibility matching and are kept private.
-                  </p>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
+              {/* Navigation buttons */}
+              <div className="flex gap-4 mt-8">
+                {currentStep > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleBack}
+                    className="flex-1 py-6 border-border bg-muted/50 hover:bg-muted"
+                  >
+                    <ChevronLeft className="mr-2 h-5 w-5" />
+                    Back
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!canProceed() || isSubmitting}
+                  className={`flex-1 py-6 font-semibold bg-gradient-to-r from-aunty-pink to-aunty-purple hover:opacity-90 transition-opacity ${
+                    canProceed() ? 'glow-pink' : ''
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : currentStep === TOTAL_STEPS - 1 ? (
+                    <>
+                      Find My Matches ✨
+                    </>
+                  ) : (
+                    <>
+                      Continue
+                      <ChevronRight className="ml-2 h-5 w-5" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </div>
