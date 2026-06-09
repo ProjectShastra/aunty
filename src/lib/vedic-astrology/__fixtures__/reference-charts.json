@@ -1,0 +1,957 @@
+{
+ "engine": "pyswisseph 2.10.03 (Moshier)",
+ "ayanamsa": "Lahiri",
+ "node": "mean",
+ "generated": "2026-06-09",
+ "charts": [
+  {
+   "label": "mumbai_1962",
+   "local": "1962-03-15 06:30",
+   "tz": "Asia/Kolkata",
+   "ut": "1962-03-15T01:00:00+00:00",
+   "jd_ut": 2437738.54166667,
+   "lat": 19.076,
+   "lon": 72.8777,
+   "positions": {
+    "Sun": {
+     "sidereal": 330.645307,
+     "tropical": 353.971204,
+     "speed": 0.996309,
+     "retrograde": false,
+     "nakshatra_index": 24
+    },
+    "Moon": {
+     "sidereal": 82.034977,
+     "tropical": 105.360874,
+     "speed": 12.284073,
+     "retrograde": false,
+     "nakshatra_index": 6
+    },
+    "Mars": {
+     "sidereal": 308.800435,
+     "tropical": 332.126332,
+     "speed": 0.78466,
+     "retrograde": false,
+     "nakshatra_index": 23
+    },
+    "Mercury": {
+     "sidereal": 306.05285,
+     "tropical": 329.378747,
+     "speed": 1.386696,
+     "retrograde": false,
+     "nakshatra_index": 22
+    },
+    "Jupiter": {
+     "sidereal": 304.254051,
+     "tropical": 327.579949,
+     "speed": 0.226877,
+     "retrograde": false,
+     "nakshatra_index": 22
+    },
+    "Venus": {
+     "sidereal": 341.990738,
+     "tropical": 5.316635,
+     "speed": 1.243536,
+     "retrograde": false,
+     "nakshatra_index": 25
+    },
+    "Saturn": {
+     "sidereal": 284.590988,
+     "tropical": 307.916885,
+     "speed": 0.094332,
+     "retrograde": false,
+     "nakshatra_index": 21
+    },
+    "Rahu": {
+     "sidereal": 112.819686,
+     "tropical": 136.145583,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 8
+    },
+    "Ketu": {
+     "sidereal": 292.819686,
+     "tropical": 316.145583,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 21
+    },
+    "_ascendant": {
+     "sidereal": 323.946334,
+     "sign_index": 10
+    },
+    "_ayanamsa": 23.329112
+   }
+  },
+  {
+   "label": "london_bst_1985",
+   "local": "1985-07-21 14:45",
+   "tz": "Europe/London",
+   "ut": "1985-07-21T13:45:00+00:00",
+   "jd_ut": 2446268.07291667,
+   "lat": 51.5074,
+   "lon": -0.1278,
+   "positions": {
+    "Sun": {
+     "sidereal": 95.08008,
+     "tropical": 118.732397,
+     "speed": 0.954883,
+     "retrograde": false,
+     "nakshatra_index": 7
+    },
+    "Moon": {
+     "sidereal": 140.366828,
+     "tropical": 164.019145,
+     "speed": 13.933788,
+     "retrograde": false,
+     "nakshatra_index": 10
+    },
+    "Mars": {
+     "sidereal": 94.02025,
+     "tropical": 117.672568,
+     "speed": 0.647842,
+     "retrograde": false,
+     "nakshatra_index": 7
+    },
+    "Mercury": {
+     "sidereal": 119.989355,
+     "tropical": 143.641672,
+     "speed": 0.501417,
+     "retrograde": false,
+     "nakshatra_index": 8
+    },
+    "Jupiter": {
+     "sidereal": 290.146196,
+     "tropical": 313.798514,
+     "speed": -0.121057,
+     "retrograde": true,
+     "nakshatra_index": 21
+    },
+    "Venus": {
+     "sidereal": 53.025066,
+     "tropical": 76.677383,
+     "speed": 1.1149,
+     "retrograde": false,
+     "nakshatra_index": 3
+    },
+    "Saturn": {
+     "sidereal": 207.829923,
+     "tropical": 231.48224,
+     "speed": -0.006943,
+     "retrograde": true,
+     "nakshatra_index": 15
+    },
+    "Rahu": {
+     "sidereal": 20.822444,
+     "tropical": 44.474762,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 1
+    },
+    "Ketu": {
+     "sidereal": 200.822444,
+     "tropical": 224.474762,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 15
+    },
+    "_ascendant": {
+     "sidereal": 195.210337,
+     "sign_index": 6
+    },
+    "_ayanamsa": 23.655284
+   }
+  },
+  {
+   "label": "delhi_midnight",
+   "local": "1990-12-25 23:55",
+   "tz": "Asia/Kolkata",
+   "ut": "1990-12-25T18:25:00+00:00",
+   "jd_ut": 2448251.26736111,
+   "lat": 28.6139,
+   "lon": 77.209,
+   "positions": {
+    "Sun": {
+     "sidereal": 249.970258,
+     "tropical": 273.705475,
+     "speed": 1.018705,
+     "retrograde": false,
+     "nakshatra_index": 18
+    },
+    "Moon": {
+     "sidereal": 347.854361,
+     "tropical": 11.589578,
+     "speed": 13.638627,
+     "retrograde": false,
+     "nakshatra_index": 26
+    },
+    "Mars": {
+     "sidereal": 34.322676,
+     "tropical": 58.057893,
+     "speed": -0.091158,
+     "retrograde": true,
+     "nakshatra_index": 2
+    },
+    "Mercury": {
+     "sidereal": 246.516562,
+     "tropical": 270.251779,
+     "speed": -1.337819,
+     "retrograde": true,
+     "nakshatra_index": 18
+    },
+    "Jupiter": {
+     "sidereal": 108.802115,
+     "tropical": 132.537332,
+     "speed": -0.080831,
+     "retrograde": true,
+     "nakshatra_index": 8
+    },
+    "Venus": {
+     "sidereal": 263.168264,
+     "tropical": 286.90348,
+     "speed": 1.254836,
+     "retrograde": false,
+     "nakshatra_index": 19
+    },
+    "Saturn": {
+     "sidereal": 271.211636,
+     "tropical": 294.946853,
+     "speed": 0.113529,
+     "retrograde": false,
+     "nakshatra_index": 20
+    },
+    "Rahu": {
+     "sidereal": 275.728958,
+     "tropical": 299.464175,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 20
+    },
+    "Ketu": {
+     "sidereal": 95.728958,
+     "tropical": 119.464175,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 7
+    },
+    "_ascendant": {
+     "sidereal": 154.02993,
+     "sign_index": 5
+    },
+    "_ayanamsa": 23.731127
+   }
+  },
+  {
+   "label": "nyc_edt_1996",
+   "local": "1996-08-04 09:10",
+   "tz": "America/New_York",
+   "ut": "1996-08-04T13:10:00+00:00",
+   "jd_ut": 2450300.04861111,
+   "lat": 40.7128,
+   "lon": -74.006,
+   "positions": {
+    "Sun": {
+     "sidereal": 108.609085,
+     "tropical": 132.41982,
+     "speed": 0.957384,
+     "retrograde": false,
+     "nakshatra_index": 8
+    },
+    "Moon": {
+     "sidereal": 358.182247,
+     "tropical": 21.992982,
+     "speed": 13.490767,
+     "retrograde": false,
+     "nakshatra_index": 26
+    },
+    "Mars": {
+     "sidereal": 72.733968,
+     "tropical": 96.544703,
+     "speed": 0.664757,
+     "retrograde": false,
+     "nakshatra_index": 5
+    },
+    "Mercury": {
+     "sidereal": 130.702495,
+     "tropical": 154.51323,
+     "speed": 1.532033,
+     "retrograde": false,
+     "nakshatra_index": 9
+    },
+    "Jupiter": {
+     "sidereal": 255.39116,
+     "tropical": 279.201895,
+     "speed": -0.088233,
+     "retrograde": true,
+     "nakshatra_index": 19
+    },
+    "Venus": {
+     "sidereal": 63.952846,
+     "tropical": 87.76358,
+     "speed": 0.808204,
+     "retrograde": false,
+     "nakshatra_index": 4
+    },
+    "Saturn": {
+     "sidereal": 343.356521,
+     "tropical": 7.167256,
+     "speed": -0.027709,
+     "retrograde": true,
+     "nakshatra_index": 25
+    },
+    "Rahu": {
+     "sidereal": 167.159904,
+     "tropical": 190.970639,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 12
+    },
+    "Ketu": {
+     "sidereal": 347.159904,
+     "tropical": 10.970639,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 26
+    },
+    "_ascendant": {
+     "sidereal": 145.775568,
+     "sign_index": 4
+    },
+    "_ayanamsa": 23.80948
+   }
+  },
+  {
+   "label": "chennai_y2k",
+   "local": "2000-01-01 00:05",
+   "tz": "Asia/Kolkata",
+   "ut": "1999-12-31T18:35:00+00:00",
+   "jd_ut": 2451544.27430556,
+   "lat": 13.0827,
+   "lon": 80.2707,
+   "positions": {
+    "Sun": {
+     "sidereal": 255.775954,
+     "tropical": 279.62915,
+     "speed": 1.019322,
+     "retrograde": false,
+     "nakshatra_index": 19
+    },
+    "Moon": {
+     "sidereal": 190.703886,
+     "tropical": 214.557082,
+     "speed": 12.14514,
+     "retrograde": false,
+     "nakshatra_index": 14
+    },
+    "Mars": {
+     "sidereal": 303.547224,
+     "tropical": 327.40042,
+     "speed": 0.775614,
+     "retrograde": false,
+     "nakshatra_index": 22
+    },
+    "Mercury": {
+     "sidereal": 246.908096,
+     "tropical": 270.761291,
+     "speed": 1.552424,
+     "retrograde": false,
+     "nakshatra_index": 18
+    },
+    "Jupiter": {
+     "sidereal": 1.371145,
+     "tropical": 25.224341,
+     "speed": 0.038271,
+     "retrograde": false,
+     "nakshatra_index": 0
+    },
+    "Venus": {
+     "sidereal": 216.835511,
+     "tropical": 240.688707,
+     "speed": 1.208166,
+     "retrograde": false,
+     "nakshatra_index": 16
+    },
+    "Saturn": {
+     "sidereal": 16.557398,
+     "tropical": 40.410593,
+     "speed": -0.021302,
+     "retrograde": true,
+     "nakshatra_index": 1
+    },
+    "Rahu": {
+     "sidereal": 101.22588,
+     "tropical": 125.079075,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 7
+    },
+    "Ketu": {
+     "sidereal": 281.22588,
+     "tropical": 305.079075,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 21
+    },
+    "_ascendant": {
+     "sidereal": 164.815265,
+     "sign_index": 5
+    },
+    "_ayanamsa": 23.857065
+   }
+  },
+  {
+   "label": "toronto_1978",
+   "local": "1978-11-30 18:20",
+   "tz": "America/Toronto",
+   "ut": "1978-11-30T23:20:00+00:00",
+   "jd_ut": 2443843.47222222,
+   "lat": 43.6532,
+   "lon": -79.3832,
+   "positions": {
+    "Sun": {
+     "sidereal": 224.842458,
+     "tropical": 248.404102,
+     "speed": 1.013839,
+     "retrograde": false,
+     "nakshatra_index": 16
+    },
+    "Moon": {
+     "sidereal": 233.322193,
+     "tropical": 256.883837,
+     "speed": 14.642154,
+     "retrograde": false,
+     "nakshatra_index": 17
+    },
+    "Mars": {
+     "sidereal": 237.605254,
+     "tropical": 261.166898,
+     "speed": 0.745868,
+     "retrograde": false,
+     "nakshatra_index": 17
+    },
+    "Mercury": {
+     "sidereal": 235.817353,
+     "tropical": 259.378997,
+     "speed": -0.898476,
+     "retrograde": true,
+     "nakshatra_index": 17
+    },
+    "Jupiter": {
+     "sidereal": 105.454573,
+     "tropical": 129.016216,
+     "speed": -0.017059,
+     "retrograde": true,
+     "nakshatra_index": 7
+    },
+    "Venus": {
+     "sidereal": 193.892005,
+     "tropical": 217.453648,
+     "speed": 0.096298,
+     "retrograde": false,
+     "nakshatra_index": 14
+    },
+    "Saturn": {
+     "sidereal": 139.853489,
+     "tropical": 163.415133,
+     "speed": 0.043145,
+     "retrograde": false,
+     "nakshatra_index": 10
+    },
+    "Rahu": {
+     "sidereal": 149.306956,
+     "tropical": 172.868599,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 11
+    },
+    "Ketu": {
+     "sidereal": 329.306956,
+     "tropical": 352.868599,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 24
+    },
+    "_ascendant": {
+     "sidereal": 70.514496,
+     "sign_index": 2
+    },
+    "_ayanamsa": 23.562563
+   }
+  },
+  {
+   "label": "sydney_2003",
+   "local": "2003-06-21 12:00",
+   "tz": "Australia/Sydney",
+   "ut": "2003-06-21T02:00:00+00:00",
+   "jd_ut": 2452811.58333333,
+   "lat": -33.8688,
+   "lon": 151.2093,
+   "positions": {
+    "Sun": {
+     "sidereal": 65.415593,
+     "tropical": 89.317178,
+     "speed": 0.95419,
+     "retrograde": false,
+     "nakshatra_index": 4
+    },
+    "Moon": {
+     "sidereal": 329.392436,
+     "tropical": 353.294021,
+     "speed": 12.370362,
+     "retrograde": false,
+     "nakshatra_index": 24
+    },
+    "Mars": {
+     "sidereal": 307.739218,
+     "tropical": 331.640803,
+     "speed": 0.398935,
+     "retrograde": false,
+     "nakshatra_index": 23
+    },
+    "Mercury": {
+     "sidereal": 49.372639,
+     "tropical": 73.274223,
+     "speed": 1.84213,
+     "retrograde": false,
+     "nakshatra_index": 3
+    },
+    "Jupiter": {
+     "sidereal": 112.196556,
+     "tropical": 136.098141,
+     "speed": 0.179733,
+     "retrograde": false,
+     "nakshatra_index": 8
+    },
+    "Venus": {
+     "sidereal": 49.421543,
+     "tropical": 73.323128,
+     "speed": 1.219643,
+     "retrograde": false,
+     "nakshatra_index": 3
+    },
+    "Saturn": {
+     "sidereal": 68.288072,
+     "tropical": 92.189657,
+     "speed": 0.129949,
+     "retrograde": false,
+     "nakshatra_index": 5
+    },
+    "Rahu": {
+     "sidereal": 34.068627,
+     "tropical": 57.970212,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 2
+    },
+    "Ketu": {
+     "sidereal": 214.068627,
+     "tropical": 237.970212,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 16
+    },
+    "_ascendant": {
+     "sidereal": 156.207296,
+     "sign_index": 5
+    },
+    "_ayanamsa": 23.905533
+   }
+  },
+  {
+   "label": "amritsar_1955",
+   "local": "1955-02-10 04:15",
+   "tz": "Asia/Kolkata",
+   "ut": "1955-02-09T22:45:00+00:00",
+   "jd_ut": 2435148.44791667,
+   "lat": 31.634,
+   "lon": 74.8723,
+   "positions": {
+    "Sun": {
+     "sidereal": 297.185266,
+     "tropical": 320.420511,
+     "speed": 1.011808,
+     "retrograde": false,
+     "nakshatra_index": 22
+    },
+    "Moon": {
+     "sidereal": 152.600341,
+     "tropical": 175.835586,
+     "speed": 12.860708,
+     "retrograde": false,
+     "nakshatra_index": 11
+    },
+    "Mars": {
+     "sidereal": 355.144079,
+     "tropical": 18.379324,
+     "speed": 0.708574,
+     "retrograde": false,
+     "nakshatra_index": 26
+    },
+    "Mercury": {
+     "sidereal": 303.192055,
+     "tropical": 326.4273,
+     "speed": -0.983186,
+     "retrograde": true,
+     "nakshatra_index": 22
+    },
+    "Jupiter": {
+     "sidereal": 88.556067,
+     "tropical": 111.791313,
+     "speed": -0.103969,
+     "retrograde": true,
+     "nakshatra_index": 6
+    },
+    "Venus": {
+     "sidereal": 250.985065,
+     "tropical": 274.22031,
+     "speed": 1.091255,
+     "retrograde": false,
+     "nakshatra_index": 18
+    },
+    "Saturn": {
+     "sidereal": 207.62164,
+     "tropical": 230.856885,
+     "speed": 0.03294,
+     "retrograde": false,
+     "nakshatra_index": 15
+    },
+    "Rahu": {
+     "sidereal": 250.074068,
+     "tropical": 273.309313,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 18
+    },
+    "Ketu": {
+     "sidereal": 70.074068,
+     "tropical": 93.309313,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 5
+    },
+    "_ascendant": {
+     "sidereal": 246.64948,
+     "sign_index": 8
+    },
+    "_ayanamsa": 23.230073
+   }
+  },
+  {
+   "label": "leicester_1988",
+   "local": "1988-09-07 16:40",
+   "tz": "Europe/London",
+   "ut": "1988-09-07T15:40:00+00:00",
+   "jd_ut": 2447412.15277778,
+   "lat": 52.6369,
+   "lon": -1.1398,
+   "positions": {
+    "Sun": {
+     "sidereal": 141.520965,
+     "tropical": 165.221517,
+     "speed": 0.971101,
+     "retrograde": false,
+     "nakshatra_index": 10
+    },
+    "Moon": {
+     "sidereal": 103.010525,
+     "tropical": 126.711077,
+     "speed": 11.953337,
+     "retrograde": false,
+     "nakshatra_index": 7
+    },
+    "Mars": {
+     "sidereal": 346.748568,
+     "tropical": 10.449121,
+     "speed": -0.165922,
+     "retrograde": true,
+     "nakshatra_index": 26
+    },
+    "Mercury": {
+     "sidereal": 166.851716,
+     "tropical": 190.552268,
+     "speed": 1.251836,
+     "retrograde": false,
+     "nakshatra_index": 12
+    },
+    "Jupiter": {
+     "sidereal": 41.957287,
+     "tropical": 65.65784,
+     "speed": 0.055134,
+     "retrograde": false,
+     "nakshatra_index": 3
+    },
+    "Venus": {
+     "sidereal": 96.477481,
+     "tropical": 120.178033,
+     "speed": 1.056582,
+     "retrograde": false,
+     "nakshatra_index": 7
+    },
+    "Saturn": {
+     "sidereal": 242.283908,
+     "tropical": 265.98446,
+     "speed": 0.013389,
+     "retrograde": false,
+     "nakshatra_index": 18
+    },
+    "Rahu": {
+     "sidereal": 320.195337,
+     "tropical": 343.895889,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 24
+    },
+    "Ketu": {
+     "sidereal": 140.195337,
+     "tropical": 163.895889,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 10
+    },
+    "_ascendant": {
+     "sidereal": 252.207099,
+     "sign_index": 8
+    },
+    "_ayanamsa": 23.699037
+   }
+  },
+  {
+   "label": "sf_pdt_1993",
+   "local": "1993-04-17 21:30",
+   "tz": "America/Los_Angeles",
+   "ut": "1993-04-18T04:30:00+00:00",
+   "jd_ut": 2449095.6875,
+   "lat": 37.7749,
+   "lon": -122.4194,
+   "positions": {
+    "Sun": {
+     "sidereal": 4.387231,
+     "tropical": 28.155055,
+     "speed": 0.977563,
+     "retrograde": false,
+     "nakshatra_index": 0
+    },
+    "Moon": {
+     "sidereal": 322.509053,
+     "tropical": 346.276878,
+     "speed": 11.851228,
+     "retrograde": false,
+     "nakshatra_index": 24
+    },
+    "Mars": {
+     "sidereal": 91.713918,
+     "tropical": 115.481743,
+     "speed": 0.445452,
+     "retrograde": false,
+     "nakshatra_index": 6
+    },
+    "Mercury": {
+     "sidereal": 339.823849,
+     "tropical": 3.591674,
+     "speed": 1.447963,
+     "retrograde": false,
+     "nakshatra_index": 25
+    },
+    "Jupiter": {
+     "sidereal": 163.714921,
+     "tropical": 187.482745,
+     "speed": -0.11399,
+     "retrograde": true,
+     "nakshatra_index": 12
+    },
+    "Venus": {
+     "sidereal": 340.362255,
+     "tropical": 4.130079,
+     "speed": -0.177863,
+     "retrograde": true,
+     "nakshatra_index": 25
+    },
+    "Saturn": {
+     "sidereal": 304.355043,
+     "tropical": 328.122867,
+     "speed": 0.07898,
+     "retrograde": false,
+     "nakshatra_index": 22
+    },
+    "Rahu": {
+     "sidereal": 230.981429,
+     "tropical": 254.749254,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 17
+    },
+    "Ketu": {
+     "sidereal": 50.981429,
+     "tropical": 74.749254,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 3
+    },
+    "_ascendant": {
+     "sidereal": 205.81254,
+     "sign_index": 6
+    },
+    "_ayanamsa": 23.76342
+   }
+  },
+  {
+   "label": "jaipur_marsretro",
+   "local": "2005-11-01 10:00",
+   "tz": "Asia/Kolkata",
+   "ut": "2005-11-01T04:30:00+00:00",
+   "jd_ut": 2453675.6875,
+   "lat": 26.9124,
+   "lon": 75.7873,
+   "positions": {
+    "Sun": {
+     "sidereal": 194.914348,
+     "tropical": 218.851468,
+     "speed": 1.000855,
+     "retrograde": false,
+     "nakshatra_index": 14
+    },
+    "Moon": {
+     "sidereal": 184.460858,
+     "tropical": 208.397978,
+     "speed": 12.874832,
+     "retrograde": false,
+     "nakshatra_index": 13
+    },
+    "Mars": {
+     "sidereal": 23.253028,
+     "tropical": 47.190148,
+     "speed": -0.350858,
+     "retrograde": true,
+     "nakshatra_index": 1
+    },
+    "Mercury": {
+     "sidereal": 218.130982,
+     "tropical": 242.068102,
+     "speed": 1.109252,
+     "retrograde": false,
+     "nakshatra_index": 16
+    },
+    "Jupiter": {
+     "sidereal": 187.38264,
+     "tropical": 211.31976,
+     "speed": 0.217074,
+     "retrograde": false,
+     "nakshatra_index": 14
+    },
+    "Venus": {
+     "sidereal": 241.891511,
+     "tropical": 265.828631,
+     "speed": 1.016708,
+     "retrograde": false,
+     "nakshatra_index": 18
+    },
+    "Saturn": {
+     "sidereal": 106.957594,
+     "tropical": 130.894714,
+     "speed": 0.038859,
+     "retrograde": false,
+     "nakshatra_index": 8
+    },
+    "Rahu": {
+     "sidereal": 348.278013,
+     "tropical": 12.215133,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 26
+    },
+    "Ketu": {
+     "sidereal": 168.278013,
+     "tropical": 192.215133,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 12
+    },
+    "_ascendant": {
+     "sidereal": 238.060035,
+     "sign_index": 7
+    },
+    "_ayanamsa": 23.938581
+   }
+  },
+  {
+   "label": "moon_boundary_1995",
+   "local": null,
+   "tz": "UTC",
+   "ut": "1995-05-06T7.2333h",
+   "jd_ut": 2449843.80138889,
+   "lat": 28.6139,
+   "lon": 77.209,
+   "note": "Moon 0.04 arcmin from nakshatra boundary",
+   "positions": {
+    "Sun": {
+     "sidereal": 21.517543,
+     "tropical": 45.312076,
+     "speed": 0.968499,
+     "retrograde": false,
+     "nakshatra_index": 1
+    },
+    "Moon": {
+     "sidereal": 93.332647,
+     "tropical": 117.12718,
+     "speed": 12.115364,
+     "retrograde": false,
+     "nakshatra_index": 6
+    },
+    "Mars": {
+     "sidereal": 118.241834,
+     "tropical": 142.036367,
+     "speed": 0.365796,
+     "retrograde": false,
+     "nakshatra_index": 8
+    },
+    "Mercury": {
+     "sidereal": 41.721248,
+     "tropical": 65.515781,
+     "speed": 1.383823,
+     "retrograde": false,
+     "nakshatra_index": 3
+    },
+    "Jupiter": {
+     "sidereal": 229.787727,
+     "tropical": 253.582259,
+     "speed": -0.097828,
+     "retrograde": true,
+     "nakshatra_index": 17
+    },
+    "Venus": {
+     "sidereal": 353.283331,
+     "tropical": 17.077864,
+     "speed": 1.209937,
+     "retrograde": false,
+     "nakshatra_index": 26
+    },
+    "Saturn": {
+     "sidereal": 328.04289,
+     "tropical": 351.837422,
+     "speed": 0.089016,
+     "retrograde": false,
+     "nakshatra_index": 24
+    },
+    "Rahu": {
+     "sidereal": 191.337365,
+     "tropical": 215.131898,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 14
+    },
+    "Ketu": {
+     "sidereal": 11.337365,
+     "tropical": 35.131898,
+     "speed": -0.052992,
+     "retrograde": true,
+     "nakshatra_index": 0
+    },
+    "_ascendant": {
+     "sidereal": 120.734265,
+     "sign_index": 4
+    },
+    "_ayanamsa": 23.792031
+   }
+  }
+ ]
+}
