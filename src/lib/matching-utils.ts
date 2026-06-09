@@ -6,7 +6,7 @@
  */
 
 import { VedicProfile, ZodiacSign, NakshatraIndex } from '@/lib/vedic-astrology/types';
-import { calculateGunaMilan, GunaMilanResult } from '@/lib/vedic-astrology/matching';
+import { calculateSymmetricGunaMilan, GunaMilanResult } from '@/lib/vedic-astrology/matching';
 
 export type MatchTier = 'soulmate' | 'twinFlame' | 'auntyApproves' | 'itsAVibe' | 'spicy' | 'karmic';
 
@@ -40,6 +40,7 @@ export interface MatchedProfile {
 
 export interface CurrentUserProfile {
   id: string;
+  gender?: string | null;
   moon_nakshatra_index: number | null;
   moon_sign_index: number | null;
   is_manglik: boolean;
@@ -61,10 +62,14 @@ export function calculateGunaScore(
   }
 
   try {
-    // calculateGunaMilan expects VedicProfile objects (boy, girl)
-    const result = calculateGunaMilan(
+    // Symmetric scoring: classical gender roles for man-woman pairs,
+    // bidirectional average otherwise. Both users always see the same score
+    // for a pairing, regardless of who is browsing (audit 3E fix).
+    const result = calculateSymmetricGunaMilan(
       currentProfile.vedic_chart,
-      candidateProfile.vedic_chart
+      candidateProfile.vedic_chart,
+      currentProfile.gender,
+      candidateProfile.gender
     );
 
     return {

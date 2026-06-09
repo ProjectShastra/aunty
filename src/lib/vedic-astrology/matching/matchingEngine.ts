@@ -6,7 +6,7 @@
  */
 
 import { VedicProfile } from '../types';
-import { calculateGunaMilan, GunaMilanResult, GunaScoreBreakdown } from './guna-milan';
+import { calculateGunaMilan, calculateSymmetricGunaMilan, GunaMilanResult, GunaScoreBreakdown } from './guna-milan';
 import { evaluateManglikCompatibility, ManglikMatchResult } from './manglik-checker';
 import { calculateSoulmateBonus, SoulmateResult } from './soulmate-bonus';
 
@@ -197,10 +197,16 @@ function collectBadges(
  */
 export function evaluateMatch(
   boyChart: VedicProfile,
-  girlChart: VedicProfile
+  girlChart: VedicProfile,
+  genders?: { a?: string | null; b?: string | null }
 ): MatchResult {
   // Layer 1: Guna Milan (Ashtakoota)
-  const gunaMilan = calculateGunaMilan(boyChart, girlChart);
+  // With genders provided: symmetric scoring (classical roles for man-woman
+  // pairs, bidirectional average otherwise — audit 3E fix). Without genders,
+  // legacy positional semantics (first arg = boy) are preserved.
+  const gunaMilan = genders
+    ? calculateSymmetricGunaMilan(boyChart, girlChart, genders.a, genders.b)
+    : calculateGunaMilan(boyChart, girlChart);
   
   // Layer 2: Manglik Safety Check
   const manglikResult = evaluateManglikCompatibility(boyChart, girlChart);

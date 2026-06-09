@@ -15,6 +15,6 @@ export type {
   SoulmateResult
 } from './matchingEngine';
 
-export { calculateGunaMilan } from './guna-milan';
+export { calculateGunaMilan, calculateSymmetricGunaMilan } from './guna-milan';
 export { evaluateManglikCompatibility, checkManglik } from './manglik-checker';
 export { calculateSoulmateBonus } from './soulmate-bonus';

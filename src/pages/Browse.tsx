@@ -98,6 +98,7 @@ export default function Browse() {
 
       const currentUserProfile: CurrentUserProfile = {
         id: myProfileData.id,
+        gender: myProfileData.gender,
         moon_nakshatra_index: myProfileData.moon_nakshatra_index,
         moon_sign_index: myProfileData.moon_sign_index,
         is_manglik: myProfileData.is_manglik && !myProfileData.manglik_cancelled,

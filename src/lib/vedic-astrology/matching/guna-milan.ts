@@ -259,3 +259,96 @@ export function calculateGunaMilan(boyProfile: VedicProfile, girlProfile: VedicP
     percentage
   };
 }
+
+// ===========================================================================
+// Symmetric scoring — fix for order-dependent results (audit 3E, 2026-06)
+//
+// Classical Ashtakoota assigns "boy"/"girl" roles: Varna requires the boy's
+// varna rank >= the girl's, and Vashya reads its table directionally. The old
+// call path passed (currentUser, candidate), so whoever was browsing got the
+// boy role and score(A→B) ≠ score(B→A).
+//
+// Convention (product decision, 2026-06):
+// - Man–woman pair: classical role assignment from actual profile gender,
+//   regardless of who is viewing. Matches traditional practice.
+// - Same-gender / nonbinary / unknown: classical texts are silent, so we
+//   compute both directions and average each koota. Labeled as our own
+//   convention, not a classical rule.
+// Either way the result is identical for both users in the pairing.
+// ===========================================================================
+
+export type GunaRoleConvention = 'classical-gender' | 'bidirectional-average';
+
+export interface SymmetricGunaMilanResult extends GunaMilanResult {
+  roleConvention: GunaRoleConvention;
+}
+
+function isMaleGender(gender?: string | null): boolean {
+  return (gender ?? '').toLowerCase() === 'male';
+}
+
+function isFemaleGender(gender?: string | null): boolean {
+  return (gender ?? '').toLowerCase() === 'female';
+}
+
+function statusForScore(totalScore: number): GunaMilanResult['matchStatus'] {
+  // Same thresholds as calculateGunaMilan
+  if (totalScore >= 28) return 'Excellent';
+  if (totalScore >= 21) return 'Good';
+  if (totalScore >= 18) return 'Average';
+  if (totalScore >= 14) return 'Below Average';
+  return 'Critical Failure';
+}
+
+/**
+ * Order-independent Guna Milan.
+ *
+ * `calculateSymmetricGunaMilan(A, B, gA, gB)` always equals
+ * `calculateSymmetricGunaMilan(B, A, gB, gA)` — both people in a pairing see
+ * the same score. See convention note above.
+ */
+export function calculateSymmetricGunaMilan(
+  profileA: VedicProfile,
+  profileB: VedicProfile,
+  genderA?: string | null,
+  genderB?: string | null
+): SymmetricGunaMilanResult {
+  // Classical role assignment when the pair is unambiguously man–woman
+  if (isMaleGender(genderA) && isFemaleGender(genderB)) {
+    return { ...calculateGunaMilan(profileA, profileB), roleConvention: 'classical-gender' };
+  }
+  if (isFemaleGender(genderA) && isMaleGender(genderB)) {
+    return { ...calculateGunaMilan(profileB, profileA), roleConvention: 'classical-gender' };
+  }
+
+  // Otherwise: average of both directions (our documented convention)
+  const ab = calculateGunaMilan(profileA, profileB);
+  const ba = calculateGunaMilan(profileB, profileA);
+
+  const breakdown: GunaScoreBreakdown = {
+    varna: (ab.breakdown.varna + ba.breakdown.varna) / 2,
+    vashya: (ab.breakdown.vashya + ba.breakdown.vashya) / 2,
+    tara: (ab.breakdown.tara + ba.breakdown.tara) / 2,
+    yoni: (ab.breakdown.yoni + ba.breakdown.yoni) / 2,
+    maitri: (ab.breakdown.maitri + ba.breakdown.maitri) / 2,
+    gana: (ab.breakdown.gana + ba.breakdown.gana) / 2,
+    bhakoot: (ab.breakdown.bhakoot + ba.breakdown.bhakoot) / 2,
+    nadi: (ab.breakdown.nadi + ba.breakdown.nadi) / 2
+  };
+
+  const totalScore =
+    breakdown.varna + breakdown.vashya + breakdown.tara + breakdown.yoni +
+    breakdown.maitri + breakdown.gana + breakdown.bhakoot + breakdown.nadi;
+
+  return {
+    totalScore,
+    maxScore: 36,
+    breakdown,
+    // Nadi and Bhakoot checks are symmetric pair-properties; OR for safety
+    nadiDosha: ab.nadiDosha || ba.nadiDosha,
+    bhakootDosha: ab.bhakootDosha || ba.bhakootDosha,
+    matchStatus: statusForScore(totalScore),
+    percentage: Math.round((totalScore / 36) * 100),
+    roleConvention: 'bidirectional-average'
+  };
+}
