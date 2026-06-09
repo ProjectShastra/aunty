@@ -88,56 +88,30 @@ The existing engine computes **individual chart features** (your nakshatra, your
 
 These are the features that make Aunty say "her Venus is sitting right on your Moon, you'll feel *seen* by her" instead of "you scored 28/36."
 
----
+### 3E. Compatibility scoring is order-dependent — **second-pass finding, 2026-06**
 
-## 4. What's Missing (Product Surface)
+`matching/guna-milan.ts` computes `calculateGunaMilan(boyProfile, girlProfile)` and every caller passes `(currentUser, candidate)` — the current user is *always* scored as "boy," regardless of either person's gender. Varna, Vashya, and Tara are directional kootas (classical rules require the boy's value to rank ≥ the girl's), so **score(A→B) ≠ score(B→A)**: two users viewing the same pairing see different numbers, and rankings differ depending on who is browsing.
 
-| Feature | Status | Priority |
-|---|---|---|
-| Chat between matched users | ❌ absent | Sprint 2 |
-| Likes / swipes / passes | Partial — `matches` table has flags, no UI verified | Sprint 1 |
-| Aunty-voice match explanations | ❌ absent | Sprint 2 |
-| Birth-time-unknown flow with witty copy | ❌ absent (currently required field, no charm) | Sprint 1 |
-| Photo moderation | ❌ absent | Sprint 3 |
-| Block / report | ❌ absent | Sprint 3 |
-| Email notifications | ❌ absent | Sprint 3 |
-| Mobile responsive QA | Unknown | Sprint 2 |
-| Dasha timing windows ("best marriage year") | ❌ absent | Sprint 2 |
-| Location-based filtering (diaspora + India) | Partial via `location_preference` field, no distance math | Sprint 2 |
+Fix: define a principled role convention (use actual profile gender where applicable; for same-gender or unspecified pairs, score both directions and take a defined combination, e.g. mean or max — decide and document). The result must be symmetric: both users see the same score.
 
----
+### 3F. Manglik cancellation is neutered — **second-pass finding, 2026-06**
 
-## 5. Recommended Path (Sprint 1)
+`matching/manglik-checker.ts` cancels Manglik dosha if **any one** of these holds: Saturn aspects Mars, Mars in own sign, Jupiter aspect/conjunction, **or age > 28**. Since every user on a dating app is an adult, the age clause alone cancels Manglik for most users — `is_manglik` effectively never matters. The age-28 "rule" is pop-astrology folklore with no Parashari basis as a standalone cancellation.
 
-**Goal:** Correct the engine, wire it server-side, and ship the Aunty-voice onboarding charm. No new features; make what exists be *right*.
+Fix: re-derive cancellation conditions from a real classical source (standard references: mutual Manglik match, Mars in own/exalted sign in the dosha house, specific benefic aspects per tradition), cite each rule in code comments, and never let a single weak factor fully cancel.
 
-1. **Fix planetary positions**
-   Replace `planetary-calculations.ts` with `astronomia`-backed implementation. Validate against 10 known charts (published ephemeris data for celebrity birth times) before declaring done.
+### 3G. No DST handling in birth-time conversion — **second-pass finding, 2026-06**
 
-2. **Move the matching engine to the server**
-   - Port `matching/` modules from `src/lib/` to `supabase/functions/_shared/vedic/`
-   - Rewrite `fetch-matches` to call `evaluateMatch()` for each candidate and return ranked results with full `MatchResult` payload
-   - Client becomes a view-only renderer of server rankings
+Onboarding converts birth time to UT using **static city offsets** (London is always UTC+0, New York always −5). A UK summer birth is off by exactly 1 hour — enough to flip the ascendant. Fix: IANA timezone lookup keyed on the birth *date* (e.g. a tz library + city→IANA zone mapping). `date-fns` is already in deps; needs `date-fns-tz` or equivalent.
 
-3. **Add Aunty-voice onboarding copy**
-   Rewrite the birth-time prompt in `Onboarding.tsx`:
-   > *"Aunty needs your exact birth time, beta. The minute matters more than you think — it moves your whole chart. Don't know it? **Ask your mom, she'll know 😉** (or check your birth certificate — it's on there)."*
+### 3H. Non-standard formulas — **second-pass finding, 2026-06**
 
-   Add a "still don't know" fallback that noon-defaults with a clear disclaimer on the profile ("birth time approximate — Moon-sign matches only, no Ascendant-based features").
+- `ascendant-calculator.ts` uses a non-standard ascendant formula — re-derive from the standard oblique-ascension form, or take it from the ephemeris library directly.
+- `utils.ts` approximates Lahiri ayanamsa with a crude linear model — replace with the ephemeris library's Lahiri value.
+- Tara, Vashya, and Graha Maitri use fractional partial scores (0.5, 1.5) that don't match standard Ashtakoota tables — re-derive against a published reference; label any deliberate tuning as such.
 
-4. **Add messages schema**
-   Migration for `messages` and `conversations` tables with RLS scoped to mutual-match pairs. No UI yet — just the data layer.
+### 3I. Engineering gaps — **second-pass finding, 2026-06**
 
-## 6. Sprint 2 Preview
-
-- Aunty-voice LLM narration (Claude Haiku) on match view — takes full `MatchResult` JSON and writes the explanation
-- Chat UI using Supabase Realtime
-- Dasha overlap computation (Vimshottari comparison) added to `MatchResult`
-- 7th house synastry overlay
-- Move off Lovable → deploy to Vercel free tier
-
----
-
-## 7. Reuse Note: Gambler's Dharma
-
-The Python `vedic_engine/` in Gambler's Dharma has the ideal chart engine (pyswisseph, Lahiri + KP dual ayanamsha). We're not porting it here — the free-tier edge-function path uses TypeScript. But if the Aunty engine's TypeScript chart layer ever drifts, we cross-check against Gambler's Dharma's pyswisseph output for the same birth data. That's the ground truth.
+- `strictNullChecks: false` in tsconfig
+- No effective error handling around `calculateProfile()` — corrupt/partial charts can be saved to the DB silently
+- `JSON.parse(sessionStorage…)` un-try/caught in onbo
