@@ -82,26 +82,22 @@ function calculateVashya(boyMoonSign: ZodiacSign, girlMoonSign: ZodiacSign): num
  * Based on birth star (nakshatra) counting
  */
 function calculateTara(boyNakshatra: NakshatraIndex, girlNakshatra: NakshatraIndex): number {
-  // Count from boy's nakshatra to girl's
-  let count1 = ((girlNakshatra - boyNakshatra + 27) % 27);
-  if (count1 === 0) count1 = 27;
-  const tara1Index = (count1 - 1) % 9;
-  
-  // Count from girl's nakshatra to boy's
-  let count2 = ((boyNakshatra - girlNakshatra + 27) % 27);
-  if (count2 === 0) count2 = 27;
-  const tara2Index = (count2 - 1) % 9;
-  
-  const tara1 = TARA_GROUPS[tara1Index];
-  const tara2 = TARA_GROUPS[tara2Index];
-  
-  const score1 = TARA_SCORES[tara1];
-  const score2 = TARA_SCORES[tara2];
-  
-  // Both should be favorable for full points
-  if (score1 >= 1.5 && score2 >= 1.5) return 3;
-  if (score1 >= 1.5 || score2 >= 1.5) return 1.5;
-  return 0;
+  // Classical Tara (Dina) Koota: count nakshatras INCLUSIVELY from each
+  // birth star to the other; if (count mod 9) is 3 (Vipat), 5 (Pratyari)
+  // or 7 (Vadha), that direction is inauspicious. Each auspicious direction
+  // earns 1.5 points (max 3). Sources: Muhurta Chintamani tradition as
+  // implemented in Saravali/Maitreya and Jagannatha Hora references.
+  // [Fixed 2026-06: previous version used exclusive counts and the wrong
+  // malefic set {Janma, Vipat, Vadha}, which effectively inverted the koota.]
+  const MALEFIC_REMAINDERS = [3, 5, 7];
+
+  const countBoyToGirl = ((girlNakshatra - boyNakshatra + 27) % 27) + 1;
+  const countGirlToBoy = ((boyNakshatra - girlNakshatra + 27) % 27) + 1;
+
+  const auspicious1 = !MALEFIC_REMAINDERS.includes(countBoyToGirl % 9);
+  const auspicious2 = !MALEFIC_REMAINDERS.includes(countGirlToBoy % 9);
+
+  return (auspicious1 ? 1.5 : 0) + (auspicious2 ? 1.5 : 0);
 }
 
 /**
@@ -166,21 +162,22 @@ function calculateGana(boyNakshatra: NakshatraIndex, girlNakshatra: NakshatraInd
  * Based on Moon sign positions relative to each other
  */
 function calculateBhakoot(boyMoonSign: ZodiacSign, girlMoonSign: ZodiacSign): { score: number; hasDosha: boolean } {
-  // Calculate positions relative to each other
-  let boyFromGirl = ((boyMoonSign - girlMoonSign + 12) % 12);
-  if (boyFromGirl === 0) boyFromGirl = 12;
-  
-  let girlFromBoy = ((girlMoonSign - boyMoonSign + 12) % 12);
-  if (girlFromBoy === 0) girlFromBoy = 12;
-  
-  // Check for dosha positions
+  // Classical Bhakoot (Rasi) Koota: sign positions counted INCLUSIVELY from
+  // each Moon sign to the other. Dosha pairs: 2/12 (dwirdwadasha), 5/9, and
+  // 6/8 (shadashtaka); binary 7/0 scoring. Source: standard Ashtakoota
+  // (Saravali/Maitreya implementation; B.V. Raman lineage tables).
+  // [Fixed 2026-06: previous exclusive counting made the dosha unreachable -
+  // verified 0/144 sign pairs could trigger it; every couple scored 7/7.]
+  const boyFromGirl = ((boyMoonSign - girlMoonSign + 12) % 12) + 1;
+  const girlFromBoy = ((girlMoonSign - boyMoonSign + 12) % 12) + 1;
+
   for (const [pos1, pos2] of BHAKOOT_DOSHA_POSITIONS) {
     if ((boyFromGirl === pos1 && girlFromBoy === pos2) ||
         (boyFromGirl === pos2 && girlFromBoy === pos1)) {
       return { score: 0, hasDosha: true };
     }
   }
-  
+
   return { score: 7, hasDosha: false };
 }
 
@@ -235,11 +232,13 @@ export function calculateGunaMilan(boyProfile: VedicProfile, girlProfile: VedicP
   
   const percentage = Math.round((totalScore / 36) * 100);
   
-  // Determine match status
+  // Determine match status. Conventional bands: <18 not recommended,
+  // 18-24 average/acceptable, 25-32 very good, 33-36 excellent
+  // (B.V. Raman lineage; standard panchanga practice).
   let matchStatus: GunaMilanResult['matchStatus'];
-  if (totalScore >= 28) {
+  if (totalScore >= 33) {
     matchStatus = 'Excellent';
-  } else if (totalScore >= 21) {
+  } else if (totalScore >= 25) {
     matchStatus = 'Good';
   } else if (totalScore >= 18) {
     matchStatus = 'Average';
@@ -292,9 +291,9 @@ function isFemaleGender(gender?: string | null): boolean {
 }
 
 function statusForScore(totalScore: number): GunaMilanResult['matchStatus'] {
-  // Same thresholds as calculateGunaMilan
-  if (totalScore >= 28) return 'Excellent';
-  if (totalScore >= 21) return 'Good';
+  // Same thresholds as calculateGunaMilan (conventional bands, see there)
+  if (totalScore >= 33) return 'Excellent';
+  if (totalScore >= 25) return 'Good';
   if (totalScore >= 18) return 'Average';
   if (totalScore >= 14) return 'Below Average';
   return 'Critical Failure';

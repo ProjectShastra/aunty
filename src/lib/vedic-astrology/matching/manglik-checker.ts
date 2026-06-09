@@ -30,27 +30,6 @@ export interface ManglikMatchResult {
 }
 
 /**
- * Check if Mars is aspected by Saturn
- * Saturn aspects 3rd, 7th, and 10th houses from its position
- */
-function isMarsAspectedBySaturn(profile: VedicProfile): boolean {
-  const marsHouse = profile.planets.Mars.house;
-  const saturnHouse = profile.planets.Saturn.house;
-  
-  // Saturn aspects: 3rd, 7th, 10th from Saturn
-  const saturnAspects = [
-    ((saturnHouse + 2) % 12) || 12,  // 3rd house
-    ((saturnHouse + 6) % 12) || 12,  // 7th house
-    ((saturnHouse + 9) % 12) || 12   // 10th house
-  ];
-  
-  // Saturn also occupies its own house
-  saturnAspects.push(saturnHouse);
-  
-  return saturnAspects.includes(marsHouse);
-}
-
-/**
  * Check if Mars is conjunct with or aspected by Jupiter
  * Jupiter aspects 5th, 7th, and 9th houses from its position
  */
@@ -72,46 +51,51 @@ function isMarsWithJupiter(profile: VedicProfile): boolean {
 }
 
 /**
- * Check Manglik cancellation rules
+ * Check Manglik cancellation rules.
+ *
+ * Every rule below traces to a sourced tradition (see docs/SOURCES_AUDIT.md
+ * section 2). Removed 2026-06 as unsourced: "Saturn aspects Mars" (no
+ * classical/named-author basis; the conjunction case is classically an
+ * affliction, not a remedy) and "age > 28" (folk belief derived from Mars's
+ * maturity age; BPHS/Phaladeepika contain no age-based cancellation - it
+ * auto-cancelled the dosha for nearly every adult user).
+ *
+ * TODO (Sprint 2, tracked): replace the any-one-rule-cancels OR-stack with a
+ * weighted intensity model (8th 100% > Lagna 50% > 7th 25% > 4th 12.5% >
+ * 12th/2nd 6.7%), add Raman's Moon and Venus reference points and the 2nd
+ * house, citing Muhurta Chintamani + Trivedi "An Insight into Kuja Dosha"
+ * from the local reference library.
  */
-function checkCancellations(profile: VedicProfile, birthDate: Date): ManglikCancellation {
+function checkCancellations(profile: VedicProfile): ManglikCancellation {
   const reasons: string[] = [];
   const marsSign = profile.planets.Mars.sign;
   const marsHouse = profile.planets.Mars.house;
   
-  // Rule 1: Saturn aspecting Mars
-  if (isMarsAspectedBySaturn(profile)) {
-    reasons.push('Saturn Aspect: Saturn aspects Mars, neutralizing the dosha');
-  }
-  
-  // Rule 2: Mars in own signs (Aries, Scorpio) or exaltation (Capricorn)
+  // Rule: Mars in own signs (Aries, Scorpio) or exaltation (Capricorn) -
+  // Muhurta Chintamani lineage (own/exalted-sign cancellation)
   if (marsSign === 1 || marsSign === 8 || marsSign === 10) {
     const signName = marsSign === 1 ? 'Aries' : marsSign === 8 ? 'Scorpio' : 'Capricorn';
     reasons.push(`Sign Rule: Mars in ${signName} (own/exalted sign) reduces dosha`);
   }
   
-  // Rule 3: Mars in 2nd house in Gemini/Virgo
+  // Rule: Mars in 2nd house in Gemini/Virgo - attested in the standard
+  // exception lists (Mercury-sign 2nd-house relief)
   if (marsHouse === 2 && (marsSign === 3 || marsSign === 6)) {
     const signName = marsSign === 3 ? 'Gemini' : 'Virgo';
     reasons.push(`House Rule: Mars in 2nd house in ${signName} is not harmful`);
   }
   
-  // Rule 4: Mars in 12th house in Taurus/Libra (Venus signs)
+  // Rule: Mars in 12th house in Taurus/Libra (Venus signs) - attested in
+  // the standard exception lists
   if (marsHouse === 12 && (marsSign === 2 || marsSign === 7)) {
     const signName = marsSign === 2 ? 'Taurus' : 'Libra';
     reasons.push(`House Rule: Mars in 12th house in ${signName} is not harmful`);
   }
   
-  // Rule 5: Jupiter aspect/conjunction with Mars
+  // Rule: Jupiter conjunct/aspecting Mars (graha drishti 5/7/9) - widely
+  // attested benefic-aspect cancellation (BPHS-lineage rules)
   if (isMarsWithJupiter(profile)) {
     reasons.push('Jupiter Rule: Jupiter conjunct/aspecting Mars cancels dosha');
-  }
-  
-  // Rule 6: Age > 28 years (Manglik dosha weakens after 28)
-  const now = new Date();
-  const ageInYears = (now.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
-  if (ageInYears > 28) {
-    reasons.push(`Age Rule: Person is over 28 years old (${Math.floor(ageInYears)} years), dosha is weakened`);
   }
   
   return {
@@ -166,11 +150,11 @@ export function evaluateManglikCompatibility(
   
   // Check cancellations for both
   const boyCancellation = boyManglik.isManglik 
-    ? checkCancellations(boyProfile, boyProfile.birthData.date)
+    ? checkCancellations(boyProfile)
     : { isCancelled: false, reasons: [] };
     
   const girlCancellation = girlManglik.isManglik
-    ? checkCancellations(girlProfile, girlProfile.birthData.date)
+    ? checkCancellations(girlProfile)
     : { isCancelled: false, reasons: [] };
   
   // Determine status
@@ -182,7 +166,8 @@ export function evaluateManglikCompatibility(
     status = 'SAFE';
     finalReason = 'Neither partner has Manglik Dosha';
   }
-  // Case 2: Both are Manglik - SAFE (Manglik + Manglik cancels out)
+  // Case 2: Both are Manglik - SAFE ("Dosha Samya": mutual Manglik
+  // counterbalance, standard matching practice / Raman's Muhurtha)
   else if (boyManglik.isManglik && girlManglik.isManglik) {
     status = 'SAFE';
     finalReason = 'Both partners are Manglik - doshas cancel each other';
