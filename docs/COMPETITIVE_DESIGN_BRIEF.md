@@ -36,7 +36,7 @@ Real classical material (Gana, Yoni, Nadi, Stree Deergha, Mahendra, 7th lords) w
 
 ### 1D. Their five design patterns worth stealing
 
-1. **One ruthless card template:** big color-coded number → category label → human verdict title ("On Fire," "Energy Drain") → italic question → one ~100-word plain-English paragraph. Jargon demoted to a single phrase mid-narrative.
+1. **One ruthless card template:** big color-coded numeral → category label → human verdict title ("On Fire," "Energy Drain") → italic question → one ~100-word plain-English paragraph. Jargon demoted to a single phrase mid-narrative.
 2. **Scroll choreography:** the next card's giant numeral always peeks above the fold; the next section header peeks below the last card. Continuous teaser engine.
 3. **Honesty as luxury:** 0-scores stated bluntly, then reframed as actionable counsel. Bad news builds trust; good scores feel earned.
 4. **Heavy name injection:** full names in nearly every sentence — intensely personal.

@@ -59,6 +59,8 @@ Scope: `ProjectShastra/aunty` at HEAD of `main` (59 commits in).
 - **Option A (recommended):** replace `planetary-calculations.ts` with calls to `astronomia.planetposition` + VSOP87 data files. Accurate to arcseconds for modern dates.
 - **Option B:** swap for `sweph-wasm` (Swiss Ephemeris compiled to WASM). Gold-standard, NASA-JPL-grade, but ~3MB bundle.
 
+> **Status 2026-06:** FIXED — rewritten on `astronomia` (full VSOP87-B + Meeus Moon), validated against a 12-chart pyswisseph reference suite (max drift 0.006°, 108/108 nakshatra, 60/60 retrograde). See `__fixtures__/reference-charts.json` + `__tests__/planetary-calculations.test.ts`.
+
 ### 3B. Edge function doesn't use the real engine
 
 `supabase/functions/fetch-matches/index.ts` re-implements a shallow Nadi/Manglik/soulmate check inline and **never calls `matchingEngine.ts`**. So the real Ashtakoota + Jaimini code sits unused on the server path. Clients would have to recompute match scores themselves with profile data — and looking at `Browse.tsx`/`MatchView.tsx` (to verify), this is the current implicit design.
@@ -107,11 +109,68 @@ Onboarding converts birth time to UT using **static city offsets** (London is al
 ### 3H. Non-standard formulas — **second-pass finding, 2026-06**
 
 - `ascendant-calculator.ts` uses a non-standard ascendant formula — re-derive from the standard oblique-ascension form, or take it from the ephemeris library directly.
-- `utils.ts` approximates Lahiri ayanamsa with a crude linear model — replace with the ephemeris library's Lahiri value.
+- `utils.ts` approximates Lahiri ayanamsa with a crude linear model — replace with the ephemeris library's Lahiri value. *(Status 2026-06: FIXED — exact polynomial fit to Swiss Ephemeris Lahiri, residual < 0.001″.)*
 - Tara, Vashya, and Graha Maitri use fractional partial scores (0.5, 1.5) that don't match standard Ashtakoota tables — re-derive against a published reference; label any deliberate tuning as such.
 
 ### 3I. Engineering gaps — **second-pass finding, 2026-06**
 
 - `strictNullChecks: false` in tsconfig
 - No effective error handling around `calculateProfile()` — corrupt/partial charts can be saved to the DB silently
-- `JSON.parse(sessionStorage…)` un-try/caught in onbo
+- `JSON.parse(sessionStorage…)` un-try/caught in onboarding
+- Photo upload: no file-type/size validation; blob URLs never revoked (memory leak); orphaned storage files on abandoned signups
+- No 18+ age gate anywhere
+- Lovable dev script still in `index.html`
+
+---
+
+## 4. What's Missing (Product Surface)
+
+| Feature | Status | Priority |
+|---|---|---|
+| Chat between matched users | ❌ absent | Sprint 2 |
+| Likes / swipes / passes | Partial — `matches` table has flags, no UI verified | Sprint 1 |
+| Aunty-voice match explanations | ❌ absent | Sprint 2 |
+| Birth-time-unknown flow with witty copy | ❌ absent (currently required field, no charm) | Sprint 1 |
+| Photo moderation | ❌ absent | Sprint 3 |
+| Block / report | ❌ absent | Sprint 3 |
+| Email notifications | ❌ absent | Sprint 3 |
+| Mobile responsive QA | Unknown | Sprint 2 |
+| Dasha timing windows ("best marriage year") | ❌ absent | Sprint 2 |
+| Location-based filtering (diaspora + India) | Partial via `location_preference` field, no distance math | Sprint 2 |
+
+---
+
+## 5. Recommended Path (Sprint 1)
+
+**Goal:** Correct the engine, wire it server-side, and ship the Aunty-voice onboarding charm. No new features; make what exists be *right*.
+
+1. **Fix planetary positions**
+   Replace `planetary-calculations.ts` with `astronomia`-backed implementation. Validate against 10 known charts (published ephemeris data for celebrity birth times) before declaring done. *(Done 2026-06.)*
+
+2. **Move the matching engine to the server**
+   - Port `matching/` modules from `src/lib/` to `supabase/functions/_shared/vedic/`
+   - Rewrite `fetch-matches` to call `evaluateMatch()` for each candidate and return ranked results with full `MatchResult` payload
+   - Client becomes a view-only renderer of server rankings
+
+3. **Add Aunty-voice onboarding copy**
+   Rewrite the birth-time prompt in `Onboarding.tsx`:
+   > *"Aunty needs your exact birth time, beta. The minute matters more than you think — it moves your whole chart. Don't know it? **Ask your mom, she'll know 😉** (or check your birth certificate — it's on there)."*
+
+   Add a "still don't know" fallback that noon-defaults with a clear disclaimer on the profile ("birth time approximate — Moon-sign matches only, no Ascendant-based features").
+
+4. **Add messages schema**
+   Migration for `messages` and `conversations` tables with RLS scoped to mutual-match pairs. No UI yet — just the data layer.
+
+## 6. Sprint 2 Preview
+
+- Aunty-voice LLM narration (Claude Haiku) on match view — takes full `MatchResult` JSON and writes the explanation
+- Chat UI using Supabase Realtime
+- Dasha overlap computation (Vimshottari comparison) added to `MatchResult`
+- 7th house synastry overlay
+- Move off Lovable → deploy to Vercel free tier
+
+---
+
+## 7. Reuse Note: Gambler's Dharma
+
+The Python `vedic_engine/` in Gambler's Dharma has the ideal chart engine (pyswisseph, Lahiri + KP dual ayanamsha). We're not porting it here — the free-tier edge-function path uses TypeScript. But if the Aunty engine's TypeScript chart layer ever drifts, we cross-check against Gambler's Dharma's pyswisseph output for the same birth data. That's the ground truth.
