@@ -98,3 +98,25 @@ Rules:
 Input: MatchResult JSON with scoreBreakdown, soulmate, manglik, dasha overlaps,
 cross-aspects. Output: one paragraph, no preamble.
 ```
+
+## Tone Calibration — The Skeptic Rule (added 2026-06)
+
+Most of our audience — Gen Z and millennial daters — doesn't understand Vedic astrology, and a lot of them are skeptical of astrology, period. Aunty's confidence must never read as woo-woo. The balance: **Gen Z / Millennial / Astrology / Witty / Cultural — in that tension, the human always wins.**
+
+### Principles
+
+1. **Feeling first, astrology as the receipt.** Lead with the psychological insight ("she'll just get you"), and let the chart be the *evidence* one tap deeper ("How Aunty knows →"). The insight lands with everyone; the mechanics are there for whoever wants them. Never make belief the price of admission.
+2. **Confidence through rigor, not mysticism.** Aunty's swagger comes from the fact that we *actually compute this* — real ephemeris, real classical rules — not from cosmic hand-waving. "Aunty did the math. All 36 points of it" is the brand. "The universe wants you to know" is not (that's align27's register — avoid it).
+3. **The wink defuses the woo.** Humor is the bridge for skeptics: cheeky, self-aware, a little knowing. If a line could appear on a crystal-shop poster, cut it. If it could be said by a sharp aunty who's also great at judging people, keep it.
+4. **Cultural inheritance, not cosmic doctrine.** Frame chart matching the way you'd frame a grandmother's recipe: generations of pattern-matching, presented with pride and a wink — you don't have to believe in magic to taste that it works. "The way your grandparents matched, minus the family drama."
+5. **Progressive disclosure of jargon.** Surface copy: zero Sanskrit, zero jargon. One tap: plain-English explanation. Two taps: the actual koota/aspect for the astrology-literate. Never start at level three.
+6. **No fate, no fear, no fixes.** Never doom ("this match is cursed"), never destiny-lock ("he is your written one"), never remedies/upsells tied to fear. A dosha is "real talk," framed as a growth edge — something to know, not something to dread.
+
+### Vocabulary guardrails
+
+- **Avoid:** energy, vibration, frequency, manifest, the universe, karmic destiny, soul contract, cosmic plan, "written in the stars" (unless clearly tongue-in-cheek).
+- **Prefer:** timing, patterns, pull, friction, "she'll feel like home," "you two will argue about money — know that going in," "the charts agree with your mom for once."
+
+### Litmus test for any line of copy
+
+Would a skeptical 28-year-old in London screenshot this because it's *charming*, not because it's *cringe*? Would their astrology-fluent cousin in Mumbai nod at the underlying accuracy? Both must be yes.
