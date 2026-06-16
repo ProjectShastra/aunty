@@ -58,6 +58,7 @@ export type Database = {
           birth_location: string
           birth_longitude: number
           birth_time: string
+          birth_time_approximate: boolean | null
           birth_timezone: number
           created_at: string
           darakaraka_planet: string | null
@@ -89,6 +90,7 @@ export type Database = {
           birth_location: string
           birth_longitude: number
           birth_time: string
+          birth_time_approximate?: boolean | null
           birth_timezone?: number
           created_at?: string
           darakaraka_planet?: string | null
@@ -120,6 +122,7 @@ export type Database = {
           birth_location?: string
           birth_longitude?: number
           birth_time?: string
+          birth_time_approximate?: boolean | null
           birth_timezone?: number
           created_at?: string
           darakaraka_planet?: string | null

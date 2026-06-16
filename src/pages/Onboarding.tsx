@@ -66,11 +66,11 @@ const stepConfig = [
     title: "When did you enter this world? 🌟",
     subtitle: "Aunty needs your exact birth date for the stars"
   },
-  { 
-    id: 'birthtime', 
-    icon: Clock, 
+  {
+    id: 'birthtime',
+    icon: Clock,
     title: "What time were you born? ⏰",
-    subtitle: "Text your mom if you have to—Aunty needs precision!"
+    subtitle: "The exact minute matters more than you'd think, beta — it can move your whole chart. Don't know it? Ask your mom, she'll know 😉"
   },
   { 
     id: 'location', 
@@ -98,6 +98,7 @@ export default function Onboarding() {
   const [birthHour, setBirthHour] = useState('');
   const [birthMinute, setBirthMinute] = useState('');
   const [birthAmPm, setBirthAmPm] = useState('');
+  const [birthTimeUnknown, setBirthTimeUnknown] = useState(false);
   const [birthLocation, setBirthLocation] = useState<LocationData | null>(null);
 
   // Load signup data if exists
@@ -124,7 +125,7 @@ export default function Onboarding() {
       case 'birthdate':
         return birthDate !== null;
       case 'birthtime':
-        return birthHour !== '' && birthMinute !== '' && birthAmPm !== '';
+        return birthTimeUnknown || (birthHour !== '' && birthMinute !== '' && birthAmPm !== '');
       case 'location':
         return birthLocation !== null;
       default:
@@ -182,12 +183,21 @@ export default function Onboarding() {
     setIsSubmitting(true);
 
     try {
-      // Convert time to 24-hour format
-      let hour = parseInt(birthHour);
-      if (birthAmPm === 'pm' && hour !== 12) hour += 12;
-      if (birthAmPm === 'am' && hour === 12) hour = 0;
-      const minute = parseInt(birthMinute, 10);
-      const birthTime = `${hour.toString().padStart(2, '0')}:${birthMinute.padStart(2, '0')}`;
+      // Convert time to 24-hour format. If the user doesn't know their birth
+      // time, fall back to noon — Moon sign stays reliable, ascendant/house
+      // features are flagged approximate so matching can downweight them.
+      let hour: number;
+      let minute: number;
+      if (birthTimeUnknown) {
+        hour = 12;
+        minute = 0;
+      } else {
+        hour = parseInt(birthHour);
+        if (birthAmPm === 'pm' && hour !== 12) hour += 12;
+        if (birthAmPm === 'am' && hour === 12) hour = 0;
+        minute = parseInt(birthMinute, 10);
+      }
+      const birthTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
       // Resolve the DST-correct UTC offset for THIS birth date. A static city
       // offset is an hour wrong for any DST-region birth in the other season,
@@ -242,6 +252,7 @@ export default function Onboarding() {
         birth_longitude: birthLocation.longitude,
         birth_location: `${birthLocation.name}, ${birthLocation.country}`,
         birth_timezone: resolvedTzOffset,
+        birth_time_approximate: birthTimeUnknown,
         photo_1: photo1Url,
         photo_2: photo2Url,
         moon_nakshatra_index: vedicProfile.moon.nakshatra,
@@ -433,14 +444,42 @@ export default function Onboarding() {
                 )}
 
                 {stepConfig[currentStep].id === 'birthtime' && (
-                  <OnboardingTimePicker
-                    hour={birthHour}
-                    minute={birthMinute}
-                    ampm={birthAmPm}
-                    onHourChange={setBirthHour}
-                    onMinuteChange={setBirthMinute}
-                    onAmPmChange={setBirthAmPm}
-                  />
+                  <div className="space-y-5">
+                    {birthTimeUnknown ? (
+                      <div className="rounded-xl bg-muted/40 border border-border p-5 text-center space-y-3">
+                        <p className="text-sm text-foreground/90">
+                          No worries, beta. Aunty will use <span className="font-semibold">noon</span> as a placeholder
+                          — but you'll only see Moon-sign matches, not the deeper rising-sign ones. That's roughly 40% of
+                          Aunty's magic. Come back and update this the moment your mom texts you back. 💫
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setBirthTimeUnknown(false)}
+                          className="text-sm font-medium text-primary hover:underline"
+                        >
+                          Actually, I know my time →
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <OnboardingTimePicker
+                          hour={birthHour}
+                          minute={birthMinute}
+                          ampm={birthAmPm}
+                          onHourChange={setBirthHour}
+                          onMinuteChange={setBirthMinute}
+                          onAmPmChange={setBirthAmPm}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setBirthTimeUnknown(true)}
+                          className="block w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          I genuinely can't find out
+                        </button>
+                      </>
+                    )}
+                  </div>
                 )}
 
                 {stepConfig[currentStep].id === 'location' && (
