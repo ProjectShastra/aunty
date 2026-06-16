@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MapPin, Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { resolveIanaZone } from '@/lib/timezone';
 
 // Comprehensive city database with coordinates and timezone offsets
 const CITY_DATABASE: Array<{
@@ -230,7 +231,10 @@ export interface LocationData {
   country: string;
   latitude: number;
   longitude: number;
+  /** Static standard-time UTC offset (hours). Display + non-DST fallback only. */
   timezone: number;
+  /** IANA zone for DST-correct offset resolution; null when the static offset is reliable. */
+  ianaZone: string | null;
 }
 
 interface LocationPickerProps {
@@ -274,7 +278,8 @@ export function LocationPicker({ value, onChange, placeholder = "Search for your
       country: city.country,
       latitude: city.lat,
       longitude: city.lng,
-      timezone: city.timezone
+      timezone: city.timezone,
+      ianaZone: resolveIanaZone(city.name, city.country),
     });
     setQuery(`${city.name}, ${city.country}`);
     setIsOpen(false);

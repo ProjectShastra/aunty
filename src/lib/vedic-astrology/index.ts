@@ -27,8 +27,7 @@ import {
   getNakshatraLord,
   checkManglikDosha,
   getManglikSeverity,
-  parseTimeString,
-  localToUTC
+  parseTimeString
 } from './utils';
 import { getAllPlanetaryPositions } from './planetary-calculations';
 import { calculateAscendant } from './ascendant-calculator';
@@ -51,14 +50,17 @@ export function calculateProfile(
   longitude: number,
   timezone: number = 0
 ): VedicProfile {
-  // Parse time and create full datetime
+  // Parse time and build the UTC instant of birth WITHOUT depending on the
+  // host's local timezone. Read the calendar date with the same local getters
+  // the date picker used to build it, then compose the instant explicitly with
+  // Date.UTC and subtract the (DST-resolved) birth offset. The old setHours +
+  // localToUTC path silently shifted charts by the server/browser's own offset.
   const { hours, minutes } = parseTimeString(time);
-  const birthDateTime = new Date(date);
-  birthDateTime.setHours(hours, minutes, 0, 0);
-  
-  // Convert to UTC
-  const utcDateTime = localToUTC(birthDateTime, timezone);
-  
+  const utcMillis =
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes) -
+    timezone * 3600000;
+  const utcDateTime = new Date(utcMillis);
+
   // Calculate Julian Day
   const julianDay = dateToJulianDay(utcDateTime);
   

@@ -31,6 +31,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { calculateProfile } from '@/lib/vedic-astrology';
 import { getElementFromMoonSign } from '@/lib/element-calculator';
+import { zoneOffsetHoursForWallTime } from '@/lib/timezone';
 
 const TOTAL_STEPS = 7;
 
@@ -185,7 +186,23 @@ export default function Onboarding() {
       let hour = parseInt(birthHour);
       if (birthAmPm === 'pm' && hour !== 12) hour += 12;
       if (birthAmPm === 'am' && hour === 12) hour = 0;
+      const minute = parseInt(birthMinute, 10);
       const birthTime = `${hour.toString().padStart(2, '0')}:${birthMinute.padStart(2, '0')}`;
+
+      // Resolve the DST-correct UTC offset for THIS birth date. A static city
+      // offset is an hour wrong for any DST-region birth in the other season,
+      // which can flip the ascendant a whole sign. Non-DST zones (ianaZone null)
+      // keep their reliable static offset.
+      const resolvedTzOffset = birthLocation.ianaZone
+        ? zoneOffsetHoursForWallTime(
+            birthDate.getFullYear(),
+            birthDate.getMonth() + 1,
+            birthDate.getDate(),
+            hour,
+            minute,
+            birthLocation.ianaZone,
+          )
+        : birthLocation.timezone;
 
       // Calculate Vedic profile
       const vedicProfile = calculateProfile(
@@ -193,7 +210,7 @@ export default function Onboarding() {
         birthTime,
         birthLocation.latitude,
         birthLocation.longitude,
-        birthLocation.timezone
+        resolvedTzOffset
       );
 
       // Show analyzing screen
@@ -224,7 +241,7 @@ export default function Onboarding() {
         birth_latitude: birthLocation.latitude,
         birth_longitude: birthLocation.longitude,
         birth_location: `${birthLocation.name}, ${birthLocation.country}`,
-        birth_timezone: birthLocation.timezone,
+        birth_timezone: resolvedTzOffset,
         photo_1: photo1Url,
         photo_2: photo2Url,
         moon_nakshatra_index: vedicProfile.moon.nakshatra,
