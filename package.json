@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
+    "build:edge": "node scripts/build-edge-bundle.mjs",
     "validate:couples": "tsx scripts/validate-couples.ts"
   },
   "dependencies": {

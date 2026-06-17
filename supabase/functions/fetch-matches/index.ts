@@ -1,46 +1,25 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// Real Vedic matching engine — single source of truth in
+// src/lib/vedic-astrology/matching, bundled for Deno by `npm run build:edge`.
+// (Replaces the former shallow inline Nadi/Manglik approximation.)
+import { evaluateMatch } from "../_shared/matching.bundle.js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-/**
- * Nadi (pulse) group for compatibility checking
- */
-const NAKSHATRA_TO_NADI: Record<number, string> = {
-  1: 'Aadi', 2: 'Madhya', 3: 'Antya',
-  4: 'Antya', 5: 'Madhya', 6: 'Aadi',
-  7: 'Aadi', 8: 'Madhya', 9: 'Antya',
-  10: 'Aadi', 11: 'Madhya', 12: 'Antya',
-  13: 'Antya', 14: 'Madhya', 15: 'Aadi',
-  16: 'Aadi', 17: 'Madhya', 18: 'Antya',
-  19: 'Aadi', 20: 'Madhya', 21: 'Antya',
-  22: 'Antya', 23: 'Madhya', 24: 'Aadi',
-  25: 'Aadi', 26: 'Madhya', 27: 'Antya',
-};
-
-function getPadaFromChart(vedicChart: any): number {
-  if (!vedicChart?.moon?.nakshatraPada) {
-    return 1;
-  }
-  return vedicChart.moon.nakshatraPada;
-}
-
-interface Profile {
+interface DiscoveryProfile {
   id: string;
   user_id: string;
   name: string;
-  moon_nakshatra_index: number | null;
-  moon_sign_index: number | null;
-  is_manglik: boolean | null;
-  manglik_cancelled: boolean | null;
-  atmakaraka_planet: string | null;
-  darakaraka_planet: string | null;
-  vedic_chart: any;
-  looking_for: string | null;
   gender: string | null;
+  darakaraka_planet: string | null;
+  atmakaraka_planet: string | null;
+  vedic_chart: unknown;
+  // ...plus the rest of the columns returned by get_discovery_profiles
+  [key: string]: unknown;
 }
 
 serve(async (req) => {
@@ -52,11 +31,9 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    
-    // Create admin client for secure operations
+
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get the authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(
@@ -65,12 +42,10 @@ serve(async (req) => {
       );
     }
 
-    // Create client with user's token to verify auth
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
+      global: { headers: { Authorization: authHeader } },
     });
 
-    // Get current user
     const { data: { user }, error: authError } = await userClient.auth.getUser();
     if (authError || !user) {
       return new Response(
@@ -79,7 +54,6 @@ serve(async (req) => {
       );
     }
 
-    // Get current user's profile using admin client
     const { data: currentProfile, error: profileError } = await adminClient
       .from("profiles")
       .select("*")
@@ -93,12 +67,11 @@ serve(async (req) => {
       );
     }
 
-    // Use the secure discovery function to get ALL profiles (no filtering, just sorting)
     const { data: discoveryProfiles, error: discoveryError } = await adminClient
-      .rpc('get_discovery_profiles', {
+      .rpc("get_discovery_profiles", {
         p_user_id: user.id,
         p_looking_for: currentProfile.looking_for,
-        p_limit: 100 // Increased limit to show more profiles
+        p_limit: 100,
       });
 
     if (discoveryError) {
@@ -109,78 +82,67 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Found ${(discoveryProfiles || []).length} discovery profiles`);
+    const candidates = (discoveryProfiles || []) as DiscoveryProfile[];
+    console.log(`Found ${candidates.length} discovery profiles`);
 
-    const currentNakshatra = currentProfile.moon_nakshatra_index;
-    const currentNadi = currentNakshatra ? NAKSHATRA_TO_NADI[currentNakshatra] : null;
-    const currentPada = getPadaFromChart(currentProfile.vedic_chart);
-    const currentIsManglik = currentProfile.is_manglik && !currentProfile.manglik_cancelled;
-    const currentAtmakaraka = currentProfile.atmakaraka_planet;
-
-    // NO FILTERING - "Sort, Don't Filter" strategy
-    // Instead, we tag each profile with metadata for client-side sorting
-    type ProfileWithMetadata = Profile & { 
-      manglikPriority: number; 
-      isSoulmate: boolean;
-      hasNadiDosha: boolean;
-    };
-    
-    const profilesWithMetadata: ProfileWithMetadata[] = (discoveryProfiles || []).map((profile: Profile) => {
-      const candidateManglik = profile.is_manglik && !profile.manglik_cancelled;
-      let manglikPriority = 1;
-      
-      // Manglik priority scoring
-      if (currentIsManglik) {
-        if (candidateManglik) {
-          manglikPriority = 0; // Best for Manglik users
-        } else {
-          manglikPriority = 2; // Less ideal
-        }
-      } else {
-        if (candidateManglik) {
-          manglikPriority = 2; // Less ideal for non-Manglik
-        } else {
-          manglikPriority = 0; // Best for non-Manglik
-        }
+    // Authoritative, server-side scoring using the full engine: Ashtakoota
+    // (order-independent via genders), Manglik with cancellations, and Jaimini
+    // soulmate. Profiles without a computed chart fall through unscored.
+    const scored = candidates.map((profile) => {
+      if (!currentProfile.vedic_chart || !profile.vedic_chart) {
+        return { ...profile, matchScore: null };
       }
-      
-      // Soulmate detection (AK-DK match)
-      const isSoulmate = 
-        currentAtmakaraka && 
-        profile.darakaraka_planet && 
-        currentAtmakaraka === profile.darakaraka_planet;
-
-      // Nadi Dosha detection (same Nadi AND same Pada = dosha)
-      let hasNadiDosha = false;
-      if (profile.moon_nakshatra_index && currentNadi) {
-        const candidateNadi = NAKSHATRA_TO_NADI[profile.moon_nakshatra_index];
-        const candidatePada = getPadaFromChart(profile.vedic_chart);
-        
-        if (candidateNadi === currentNadi && candidatePada === currentPada) {
-          hasNadiDosha = true;
-        }
+      try {
+        const result = evaluateMatch(
+          currentProfile.vedic_chart,
+          profile.vedic_chart,
+          { a: currentProfile.gender, b: profile.gender },
+        );
+        return {
+          ...profile,
+          matchScore: {
+            score: result.score,
+            gunaScore: result.gunaMilan.totalScore,
+            percentage: result.percentage,
+            verdict: result.verdict,
+            matchStatus: result.matchStatus,
+            breakdown: result.scoreBreakdown,
+            badges: result.badges,
+            isSoulmate: result.soulmate.akDkMatch,
+            nadiDosha: result.nadiDosha,
+            bhakootDosha: result.bhakootDosha,
+          },
+        };
+      } catch (err) {
+        console.error(`evaluateMatch failed for ${profile.id}:`, err);
+        return { ...profile, matchScore: null };
       }
-      
-      return {
-        ...profile,
-        manglikPriority,
-        isSoulmate: !!isSoulmate,
-        hasNadiDosha,
-      };
     });
 
-    console.log(`Processed ${profilesWithMetadata.length} profiles with metadata`);
-    console.log(`Soulmates: ${profilesWithMetadata.filter(p => p.isSoulmate).length}`);
-    console.log(`Nadi Dosha: ${profilesWithMetadata.filter(p => p.hasNadiDosha).length}`);
+    // Rank: soulmates first, then by total score (with bonuses) descending.
+    // Unscored profiles sink to the bottom.
+    const ranked = scored.sort((a, b) => {
+      const sa = a.matchScore, sb = b.matchScore;
+      if (!sa && !sb) return 0;
+      if (!sa) return 1;
+      if (!sb) return -1;
+      if (sa.isSoulmate !== sb.isSoulmate) return sa.isSoulmate ? -1 : 1;
+      return sb.score - sa.score;
+    });
+
+    console.log(
+      `Scored ${ranked.filter((p) => p.matchScore).length}, ` +
+      `soulmates ${ranked.filter((p) => p.matchScore?.isSoulmate).length}`
+    );
 
     return new Response(
       JSON.stringify({
-        profiles: profilesWithMetadata,
+        profiles: ranked,
         currentProfile: {
           id: currentProfile.id,
           moon_nakshatra_index: currentProfile.moon_nakshatra_index,
           moon_sign_index: currentProfile.moon_sign_index,
-          is_manglik: currentIsManglik,
+          is_manglik: currentProfile.is_manglik && !currentProfile.manglik_cancelled,
           atmakaraka_planet: currentProfile.atmakaraka_planet,
           darakaraka_planet: currentProfile.darakaraka_planet,
           vedic_chart: currentProfile.vedic_chart,
@@ -188,7 +150,6 @@ serve(async (req) => {
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (error) {
     console.error("Error in fetch-matches:", error);
     return new Response(

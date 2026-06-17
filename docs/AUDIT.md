@@ -70,6 +70,8 @@ This matters because:
 - Deep Ashtakoota calculation on every browse render is wasteful
 - The "why did we match" narration should happen server-side with LLM cost control
 
+*(Status 2026-06: ADDRESSED — `fetch-matches` now calls the real engine and returns authoritative, ranked `MatchResult`s (order-independent Guna via genders, Manglik with cancellations, Jaimini soulmate). No hand-duplicated copy: the engine stays the single source of truth in `src/lib/vedic-astrology/matching` and is bundled for Deno by `npm run build:edge` → `supabase/functions/_shared/matching.bundle.js`. A parity test (`edge-bundle-parity.test.ts`) fails if the bundle drifts from source. **Caveat:** verified in Node (parity + bundle integrity); not yet integration-tested on a live Supabase deploy — do that when the deploy environment is set up. The client should switch to consuming the server `matchScore` instead of recomputing in `matching-utils.ts` (follow-up).)*
+
 ### 3C. No chat / messaging layer
 
 `matches` table exists, `is_mutual` flag exists, but:
